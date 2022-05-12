@@ -1,0 +1,22 @@
+Backend
+    Routes
+        index
+        me
+        login
+        logout
+        password reset check
+        password reset
+        get caption
+        post caption
+    Database
+        users table
+        reset hash table
+        captions table
+
+Frontend
+    Routes
+        login
+        main
+        display
+        password reset
+        email list
