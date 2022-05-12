@@ -1,18 +1,17 @@
-import os, sys, hashlib, random, bcrypt
-from datetime import datetime
+import os, sys, bcrypt
 from flask import Flask, session, request, redirect, url_for
-from utilities import get_current_user, validate_reset_hash
+from utilities import get_user, validate_reset_hash, create_url_hash
 
 # Add a python module in this location with method that
 # returns a secret key as 'bytes' data type
-sys.path.append('../.secrets')
-from family_photos_secret_key import get_secret_key
+sys.path.append('./.secrets')
+from secret_key import get_key
 
 
 app = Flask(__name__)
 
 # Secret key for sessions
-app.secret_key = get_secret_key()
+app.secret_key = get_key()
 
 @app.route('/')
 def index():
@@ -21,12 +20,12 @@ def index():
 @app.route('/api/me')
 def me():
     user_id = session.get('user_id')
-    is_valid = True
-    #### Check that user id exists in database
-    if user_id and is_valid:
-        #### Get user from database
-        user = {}
-        return {'message': 'You are logged in', 'user': user}
+    user = get_user(user_id)
+    if user:
+        return {'message': 'You are logged in', 'user': {
+            'admin': user['admin'],
+            'username': user['username'],
+        }}
     else:
         return {'error': 'You are not authorized'}, 401
 
@@ -55,12 +54,7 @@ def logout():
 def create_reset_hash():
     email = request.get_json().get('email')
     if email:
-        # Creating secret, url-friendly hash
-        time = datetime.now()
-        random.seed(time.microsecond)
-        random_num = random.random()
-        secret_string = f'{email},{time},{random_num}'
-        reset_hash = hashlib.sha256(secret_string.encode()).hexdigest()
+        reset_hash = create_url_hash(email)
         #### Create record in database with time and hash
         #### Send email with custom link
         return {'message': 'Password reset email send'}, 201
@@ -68,11 +62,11 @@ def create_reset_hash():
         return {'error': 'You must provide an email address'}, 422
 
 @app.route('/api/check_reset_hash')
-def check_reset_hash(reset_hash):
+def check_reset_hash(reset_hash=None):
     return validate_reset_hash(reset_hash)['response']
 
 @app.route('/api/reset_password/<reset_hash>', methods=['POST'])
-def reset_password(reset_hash):
+def reset_password(reset_hash=None):
     password = request.get_json().get('password')
     if not password:
         return {'error': 'Password field is required'}, 422

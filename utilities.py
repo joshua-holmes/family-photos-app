@@ -1,4 +1,7 @@
-def get_current_user(user_id):
+from datetime import datetime
+import hashlib, random
+
+def get_user(user_id):
     return {
         'username': 'josh',
         'admin': False,
@@ -24,3 +27,13 @@ def validate_reset_hash(reset_hash):
             'valid': False,
             'status': 'not found'
         }
+
+def create_url_hash(email):
+    if not email: return None
+    # Creating secret, url-friendly hash
+    time = datetime.now()
+    random.seed(time.microsecond)
+    random_num = random.random()
+    secret_string = f'{email},{time},{random_num}'
+    reset_hash = hashlib.sha256(secret_string.encode()).hexdigest()
+    return reset_hash
