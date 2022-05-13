@@ -1,8 +1,9 @@
 __pycache__/
 .venv/
-.secrets/
+secret_stuff.py
+logs/
 
 # Database files
-**.sqlite
+**.sqlite**
 **.db
 **.sqbpro

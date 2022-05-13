@@ -1,17 +1,23 @@
 import os, sys, bcrypt
-from flask import Flask, session, request, redirect, url_for
-from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email
-
-# Add a python module in this location with method that
-# returns a secret key as 'bytes' data type
-sys.path.append('./.secrets')
-from secret_key import get_key
-
+from flask_mail import Mail, Message
+from flask import Flask, session, request, redirect, url_for, g
+from secret_stuff import get_key, get_email_password
+from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes
 
 app = Flask(__name__)
 
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'joshua.phillip.holmes@gmail.com'
+app.config['MAIL_PASSWORD'] = get_email_password()
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+
+mail = Mail(app)
+
 # Secret key for sessions
 app.secret_key = get_key()
+
 
 @app.route('/')
 def index():
@@ -53,16 +59,16 @@ def create_reset_hash():
     if not email:
         return {'error': 'You must provide an email address'}, 422
     reset_hash = generate_url_hash(email)
-    isSuccessful = post_reset_hash(reset_hash)
-    if not isSuccessful:
-        return {'error': 'A database error occurred and an email was not sent'}
-    isSuccessful = send_reset_email(email, reset_hash)
-    if not isSuccessful:
+    response = post_reset_hash(reset_hash, email)
+    if 'error' in response[0]:
+        return response
+    is_successful = send_reset_email(email, reset_hash, mail)
+    if not is_successful:
         return {'error': 'Email failed to send. Please try again.'}
-    return {'message': 'Password reset email send'}, 201
+    return {'message': 'Password reset email sent'}, 201
     
 
-@app.route('/api/check_reset_hash')
+@app.route('/api/check_reset_hash/<reset_hash>')
 def check_reset_hash(reset_hash=None):
     return validate_reset_hash(reset_hash)['response']
 
@@ -74,10 +80,17 @@ def reset_password(reset_hash=None):
     result = validate_reset_hash(reset_hash)
     if not result['valid']:
         return result['response']
-    isSuccessful = change_password(reset_hash)
-    if not isSuccessful:
-        return {'error': 'An unexpected error occurred'}
-    return {'message': 'Password successfully reset'}, 201
+    result = change_password(reset_hash, password)
+    if not result[0].get('message'):
+        return result
+    # Get user_id from change_password
+    result = list(result)
+    user_id = result.pop()
+    result = tuple(result)
+    is_successful = expire_hashes(user_id)
+    if not is_successful:
+        return {'error': 'A database error occurred and an email was not sent'}, 500
+    return result
 
 
 @app.teardown_appcontext
