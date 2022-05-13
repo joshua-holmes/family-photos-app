@@ -1,12 +1,20 @@
+import sys
+sys.path.append('./database')
+from db import db_exe, select
 from datetime import datetime
-import hashlib, random
+import hashlib, random, bcrypt
 
-def get_user(user_id):
-    return {
-        'username': 'josh',
-        'admin': False,
-        'id': user_id
-    }
+
+
+def get_user(user_id=None, email=None, password=None):
+    user = None
+    fields = ['id', 'email', 'admin']
+    if user_id:
+        user = select(fields, 'users', f'id = {user_id}')
+    elif email and password:
+        password = select('password', 'users', 'email = {email}')
+        if password:
+    return user if user else None
 
 def validate_reset_hash(reset_hash):
     if 'valid':
@@ -28,7 +36,7 @@ def validate_reset_hash(reset_hash):
             'status': 'not found'
         }
 
-def create_url_hash(email):
+def generate_url_hash(email):
     if not email: return None
     # Creating secret, url-friendly hash
     time = datetime.now()
@@ -37,3 +45,12 @@ def create_url_hash(email):
     secret_string = f'{email},{time},{random_num}'
     reset_hash = hashlib.sha256(secret_string.encode()).hexdigest()
     return reset_hash
+
+def post_reset_hash(reset_hash):
+    return True
+
+def change_password(reset_hash):
+    return True
+
+def send_reset_email(email, reset_hash):
+    return True
