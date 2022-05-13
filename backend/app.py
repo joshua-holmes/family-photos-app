@@ -69,12 +69,15 @@ def create_reset_hash():
     
 
 @app.route('/api/check_reset_hash/<reset_hash>')
-def check_reset_hash(reset_hash=None):
+def check_reset_hash():
+    reset_hash = request.get_json().get('reset_hash')
     return validate_reset_hash(reset_hash)['response']
 
-@app.route('/api/reset_password/<reset_hash>', methods=['POST'])
-def reset_password(reset_hash=None):
-    password = request.get_json().get('password')
+@app.route('/api/reset_password', methods=['POST'])
+def reset_password():
+    json_data = request.get_json()
+    reset_hash = json_data.get('reset_hash')
+    password = json_data.get('password')
     if not password:
         return {'error': 'Password field is required'}, 422
     result = validate_reset_hash(reset_hash)

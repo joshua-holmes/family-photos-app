@@ -78,6 +78,7 @@ def change_password(reset_hash, password):
     if not check['valid']:
         return check['response']
     password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    if type(password_hash) is bytes: password_hash = password_hash.decode()
     data = {
         'password_hash': password_hash
     }
@@ -92,7 +93,7 @@ def change_password(reset_hash, password):
     return {'message': 'Password successfully created'}, 201, user_id
 
 def send_reset_email(email, reset_hash, mail):
-    message = Message('Hellow', sender='joshua.phillip.holmes@gmail.com', recipients=['themusicmanjph@gmail.com'])
+    message = Message('Hellow', sender='hello@jpholmes.com', recipients=['themusicmanjph@gmail.com'])
     message.body = f"Hi! Please follow this link: http://127.0.0.1:5000/api/reset_password/{reset_hash}"
     test = mail.send(message)
     print(test)
