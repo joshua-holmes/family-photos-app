@@ -18,18 +18,18 @@ mail = Mail(app)
 # Secret key for sessions
 app.secret_key = get_key()
 
-directory = os.getcwd() + f'/client/build'
 
 @app.route('/')
 def index():
-    directory = os.getcwd() + f'/client/build'
+    directory = os.getcwd() + f'/frontend/build'
+    print(directory)
     return send_from_directory(directory=directory, path='index.html')
 
 @app.route('/static/<folder>/<file>')
 def media(folder, file):
-    directory = os.getcwd() + f'/client/build'
-    d = directory + '/static'
+    directory = os.getcwd() + f'/frontend/build/static'
     path = folder + '/' + file
+    print(directory, path)
     return send_from_directory(directory=directory, path=path)
 
 @app.route('/api/me')
