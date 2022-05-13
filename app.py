@@ -18,19 +18,34 @@ mail = Mail(app)
 # Secret key for sessions
 app.secret_key = get_key()
 
+directory = os.getcwd() + f'/client/build'
 
 @app.route('/')
 def index():
-    directory = os.getcwd() + f'/frontend/build'
-    print(directory)
     return send_from_directory(directory=directory, path='index.html')
 
+@app.route('/<path:path>')
+def media(path):
+    if '.' in path:
+        return send_from_directory(directory=directory, path=path)
+    return redirect('/')
+
 @app.route('/static/<folder>/<file>')
-def media(folder, file):
-    directory = os.getcwd() + f'/frontend/build/static'
+def static_media(folder, file):
     path = folder + '/' + file
-    print(directory, path)
-    return send_from_directory(directory=directory, path=path)
+    d = directory + '/static'
+    return send_from_directory(directory=d, path=path)
+
+# @app.route('/<path>')
+# def media(folder, file):
+#     d = directory + '/static'
+#     path = folder + '/' + file
+#     print("DIR STATIC", d, path)
+#     return send_from_directory(directory=d, path=path)
+
+# @app.route('/manifest.json')
+# def manifest():
+#     return send_from_directory(directory=directory, path='manifest.json')
 
 @app.route('/api/me')
 def me():
