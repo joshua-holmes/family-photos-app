@@ -16,25 +16,32 @@ function Admin() {
         status: '',
         message: '',
     });
-
-    const dataEmails = formData.filter(rec => rec.email !== '').map(rec => rec.email);
-    const userEmails = users.map(rec => rec.email);
-    const newEmails = dataEmails.filter(email => !userEmails.includes(email));
-    const deletedEmails = userEmails.filter(email => !dataEmails.includes(email));
-    const change = newEmails.length !== 0 || deletedEmails.length !== 0;
+    const data = formData.filter(rec => rec.email !== '');
+    const changedUsers = data.filter(rec => {
+        const userData = users.find(r => r.email === rec.email);
+        return userData && userData.admin !== rec.admin
+    });
+    const newUsers = data.filter(rec => !users.find(r => r.email === rec.email));
+    const deletedUsers = users.filter(rec => !data.find(r => r.email === rec.email));
+    const change = deletedUsers.length !== 0 || newUsers.length !== 0 || changedUsers.length !== 0;
 
     const handleSubmit = e => {
         e.preventDefault();
         
     }
     const handleChange = e => {
-        const index = parseInt(e.target.name);
-        const value = e.target.value
-        const newData = formData.map((rec, i) => i === index ? value : rec.email)
-        if (newData.slice(-1)[0]) {
-            newData.push('')
+        const index = parseInt(e.target.id);
+        const name = e.target.name
+        const value = name === 'email' ? e.target.value : e.target.checked
+        console.log(name)
+        const newData = formData.map((rec, i) => i !== index ? rec : {
+            ...formData[i],
+            [name]: value,
+        })
+        if (newData.slice(-1)[0].email) {
+            newData.push({email: '', admin: false})
         }
-        if (!newData.slice(-2)[0]) {
+        if (!newData.slice(-2)[0].email) {
             newData.splice(-2, 1)
         }
         setFormData(newData)
@@ -47,10 +54,12 @@ function Admin() {
         {
             field: 'email',
             handleChange: handleChange,
-            formData: [...dataEmails, ''],
-            name: i,
+            formData: formData,
+            name: 'email',
             className: 'mb-2 mt-2',
+            checkBoxName: 'admin',
             isCheckbox: true,
+            index: i,
         }
     ))
 
@@ -59,7 +68,7 @@ function Admin() {
             <h2 className='vm-md'>Admin Panel</h2>
             <form onSubmit={handleSubmit}>
                 {fields.map((props, i) => (
-                    <div key={props.name} className="row align-items-center">
+                    <div key={props.index} className="row align-items-center">
                         <div className="col-10">
                             <Input {...props} />
                         </div>
