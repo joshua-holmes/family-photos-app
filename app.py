@@ -1,8 +1,10 @@
 import os, sys, bcrypt, requests
+sys.path.append('./.secrets')
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
 from secret_stuff import get_key, get_email_password
 from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes
+from google_api import create_service
 
 app = Flask(__name__)
 
@@ -12,6 +14,7 @@ app.config['MAIL_USERNAME'] = 'joshua.phillip.holmes@gmail.com'
 app.config['MAIL_PASSWORD'] = get_email_password()
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+
 
 mail = Mail(app)
 
