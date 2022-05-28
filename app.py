@@ -2,7 +2,7 @@ import os, bcrypt, requests, config
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
 from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes
-from google_api import create_service
+from google_api import get_album_contents
 
 app = Flask(__name__)
 
@@ -50,8 +50,7 @@ def static_media(folder, file):
 
 @app.route('/api/me')
 def me():
-    user_id = session.get('user_id')
-    user = get_user(user_id=user_id)
+    user = get_user(user_id=session.get('user_id'))
     if user:
         return {'message': 'You are logged in', 'user': {
             'admin': user['admin'],
@@ -119,6 +118,13 @@ def reset_password():
     if not is_successful:
         return {'error': 'A database error occurred and an email was not sent'}, 500
     return result
+
+@app.route('/api/get_photo_data')
+def get_photo_data():
+    user = get_user(user_id=session.get('user_id'))
+    if user:
+        return {'message': 'You are logged in', 'data': get_album_contents()}
+    return {'error': 'You are not authorized'}, 401
 
 
 @app.teardown_appcontext
