@@ -1,25 +1,23 @@
-import os, sys, bcrypt, requests
-sys.path.append('./.secrets')
+import os, bcrypt, requests, config
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
-from secret_stuff import get_key, get_email_password
 from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes
 from google_api import create_service
 
 app = Flask(__name__)
 
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'joshua.phillip.holmes@gmail.com'
-app.config['MAIL_PASSWORD'] = get_email_password()
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+app.secret_key = config.APP_KEY
+app.config['MAIL_SERVER'] = config.MAIL_SERVER
+app.config['MAIL_PORT'] = config.MAIL_PORT
+app.config['MAIL_USERNAME'] = config.MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = config.MAIL_PASSWORD
+app.config['MAIL_USE_TLS'] = config.MAIL_USE_TLS
+app.config['MAIL_USE_SSL'] = config.MAIL_USE_SSL
 
 
 mail = Mail(app)
 
-# Secret key for sessions
-app.secret_key = get_key()
+
 
 directory = os.getcwd() + f'/client/build'
 
