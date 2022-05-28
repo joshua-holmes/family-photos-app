@@ -2,7 +2,7 @@ import sys, hashlib, random, bcrypt
 sys.path.append('./database')
 from db import select, insert, update
 from datetime import datetime, timedelta
-from dateutil import parser
+from dateutil.parser import parse
 from flask_mail import Message
 
 def get_user(user_id=None, email=None, password=None):
@@ -32,7 +32,7 @@ def validate_reset_hash(reset_hash):
             'valid': False,
             'status': 'not found'
         }
-    expiration_time = parser.parse(expiration_str['expiration_time'])
+    expiration_time = parse(expiration_str['expiration_time'])
     if expiration_time < datetime.now():
         return {
             'response': ({'error': 'Reset link expired!'}, 422),
@@ -101,3 +101,10 @@ def send_reset_email(email, reset_hash, mail):
 
 def expire_hashes(user_id):
     return update('reset_hashes', {'expiration_time': str(datetime.now())}, where=f"user_id = '{user_id}'")
+
+def process_photo_dates(photos):
+    result = {}
+    for photo in photos:
+        date = parse(photo['creationTime'])
+        result.setdefault(date.year, {}).setdefault(date.month, {}).setdefault(date.day, True)
+    return result

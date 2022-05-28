@@ -58,6 +58,5 @@ def update(table, data, join_table=None, join_predicate=None, where=None):
     #     query += f" FROM {table} LEFT JOIN {join_table} ON {join_predicate}"
     if where:
         query += f" WHERE {where}"
-    print(query)
     is_successful = db_exe(query, mode='w')
     return is_successful

@@ -1,8 +1,8 @@
 import os, bcrypt, requests, config
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
-from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes
-from google_api import get_album_contents
+from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes, process_photo_dates
+from google_api import get_photos
 
 app = Flask(__name__)
 
@@ -92,12 +92,12 @@ def create_reset_hash():
     return {'message': 'Password reset email sent'}, 201
     
 
-@app.route('/api/check_reset_hash/<reset_hash>')
+@app.route('/api/check_reset_hash')
 def check_reset_hash():
     reset_hash = request.get_json().get('reset_hash')
     return validate_reset_hash(reset_hash)['response']
 
-@app.route('/api/reset_password', methods=['POST'])
+@app.route('/api/reset_password', methods=['PATCH'])
 def reset_password():
     json_data = request.get_json()
     reset_hash = json_data.get('reset_hash')
@@ -119,11 +119,13 @@ def reset_password():
         return {'error': 'A database error occurred and an email was not sent'}, 500
     return result
 
-@app.route('/api/get_photo_data')
-def get_photo_data():
+@app.route('/api/photos_data')
+def get_photos_data():
     user = get_user(user_id=session.get('user_id'))
     if user:
-        return {'message': 'You are logged in', 'data': get_album_contents()}
+        photos = get_photos()
+        dates = process_photo_dates(photos)
+        return {'message': 'You are logged in', 'data': photos, 'dates': dates}
     return {'error': 'You are not authorized'}, 401
 
 
