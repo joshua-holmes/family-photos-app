@@ -2,6 +2,8 @@ import React from "react";
 import "./App.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js'
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 import Login from "./components/Login";
 import Admin from "./components/Admin";
 import Home from "./components/Home";
