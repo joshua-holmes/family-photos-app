@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Input from './Input';
+import Spinner from './Spinner';
 
 
-function Login() {
+function Login({ setUser }) {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
-    const [submission, setSubmission] = useState({
-        message: '',
-        status: '',
-    })
+    const [submission, setSubmission] = useState();
+    const [forgot, setForgot] = useState(false);
+    const [loading, setLoading] = useState(false);
+
     const handleChange = e => {
         e.preventDefault();
         const field = e.target.name;
@@ -21,6 +23,38 @@ function Login() {
     }
     const handleSubmit = e => {
         e.preventDefault();
+        const config = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        }
+        const path = forgot ? '/create_reset_hash' : '/login'
+        setLoading(true);
+        setSubmission();
+        fetch(path, config)
+        .then(r => r.json())
+        .then(body => {
+            setLoading(false);
+            if (body.ok) {
+                if (forgot) {
+                    setSubmission({
+                        message: body.message,
+                        status: 'success'
+                    })
+                } else {
+                    setUser(body.data.user);
+                }
+                
+            } else {
+                setSubmission({
+                    message: body.error,
+                    status: 'danger'
+                });
+            }
+        })
     }
 
     const formFields = [
@@ -32,16 +66,31 @@ function Login() {
         input.formData = formData
     })
 
+    
+
     return (
         <>
-            <h2 className='vm-md'>Login</h2>
-            <form onSubmit={handleSubmit}>
-                {formFields.map(props => <Input key={props.field} {...props} />)}
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </form>
-            {submission.message ? (
-                <div class={`alert alert-${submission.status} mt-5`} role="alert">
-                    {submission.message}
+            <h2 className='vm-md'>{forgot ? 'Reset Password' : 'Login'}</h2>
+            { loading ? <Spinner /> : (submission?.status === 'success' ? null : 
+                <form onSubmit={handleSubmit}>
+                    {forgot ? (
+                        <Input {...formFields[0]}
+                            message='Please enter email address and reset link will be sent to you'
+                        />
+                    ) : (
+                        formFields.map(props => <Input key={props.field} {...props} />)
+                    )}
+                    <button type="submit" className="btn btn-primary">Submit</button>
+                    {forgot ? null : (
+                        <Link to='/login' onClick={() => setForgot(true)} className="hm-sm">
+                            Reset password
+                        </Link>
+                    )}
+                </form>
+            )}
+            {submission?.message ? (
+                <div className={`alert alert-${submission?.status} mt-5`} role="alert">
+                    {submission?.message}
                 </div>
             ) : null}
         </>

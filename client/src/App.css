@@ -13,6 +13,16 @@
     margin-bottom: 10px;
 }
 
+.hm-md {
+    margin-right: 30px;
+    margin-left: 30px;
+}
+
+.hm-sm {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
 img.full-screen {
     position: fixed;
     width: 94vw;

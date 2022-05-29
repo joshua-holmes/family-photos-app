@@ -1,5 +1,5 @@
 import { Calendar } from 'react-date-range';
-
+import Spinner from './Spinner';
 
 function Filter({ minDate, maxDate, disabledDays, date, onChange }) {
     return (

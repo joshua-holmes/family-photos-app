@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js'
@@ -9,17 +9,47 @@ import Admin from "./components/Admin";
 import Home from "./components/Home";
 import ResetPass from "./components/ResetPass";
 import MyNavBar from "./components/MyNavBar";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
+    const placeholder = 'loading...'
+    const [user, setUser] = useState(placeholder);
+    useEffect(() => {
+        fetch('/me')
+        .then(r => r.json())
+        .then(body => {
+            if (body.ok) {
+                setUser(body.data.user);
+            } else {
+                setUser();
+            }
+        })
+    }, [])
+
+    if (user === placeholder) {
+        return (
+            <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        )
+    }
+    
     return (
         <BrowserRouter>
-            <MyNavBar />
+            <MyNavBar user={user} setUser={setUser} />
             <div className="container vm-lg">
             <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='/admin' element={<Admin />} />
+                <Route path='/' element={user ? <Home /> : <Navigate to='/login' />} />
+                <Route path='/login' element={!user ? (
+                    <Login setUser={setUser} />
+                    ) : (
+                    <Navigate to='/' />
+                ) } />
+                <Route path='/admin' element={user?.admin ? (
+                    <Admin />
+                    ) : (
+                    <Navigate to='/' />
+                    )} />
                 <Route path='/reset_password/:hash' element={<ResetPass />} />
             </Routes>
             </div>

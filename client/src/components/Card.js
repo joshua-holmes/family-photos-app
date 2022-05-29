@@ -7,7 +7,6 @@ function Card({ url, numPerRow }) {
     const toggleSelect = () => {
         setSelected(!selected)
     }
-    console.log(selected)
     return (
         <div className={`col-lg-${Math.floor(12 / numPerRow)}`}>
             <div className="card vm-sm">
