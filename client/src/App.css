@@ -12,3 +12,27 @@
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+img.full-screen {
+    position: fixed;
+    width: 94vw;
+    height: 94vh;
+    top: 3%;
+    left: 3%;
+    z-index: 100;
+    object-fit: contain;
+    margin: 0;
+    padding: 0;
+}
+
+
+.overlay {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    opacity: 95%;
+    top: 0;
+    left: 0;
+    background-color: #999;
+    z-index: 50;
+}
