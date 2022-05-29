@@ -68,7 +68,7 @@ def create_reset_hash():
     return res('Password reset email sent. Be sure to check your spam. You can close this window now.', 201)
     
 
-@app.route('/check_reset_hash')
+@app.route('/check_reset_hash', methods=['POST'])
 def check_reset_hash():
     reset_hash = request.get_json().get('reset_hash')
     return validate_reset_hash(reset_hash)['response']
@@ -84,12 +84,10 @@ def reset_password():
     if not result['valid']:
         return result['response']
     result = change_password(reset_hash, password)
-    if not result['ok']:
+    if not result[0]['ok']:
         return result
     # Get user_id from change_password
-    result = list(result)
-    user_id = result.get('data', {}).get('user_id')
-    result = tuple(result)
+    user_id = result[0]['data']['user_id']
     is_successful = expire_hashes(user_id)
     if not is_successful:
         return res('A database error occurred and an email was not sent', 500)

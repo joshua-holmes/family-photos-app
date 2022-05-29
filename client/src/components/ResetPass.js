@@ -1,47 +1,90 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import Input from './Input';
+import Spinner from './Spinner';
 
 function ResetPass() {
     const { hash } = useParams();
-    const [hashCheck, setHashCheck] = useState({
-        message: 'Reset link expired',
-        isValid: true,
-    });
-    const [submission, setSubmission] = useState({
-        message: '',
-        status: '',
-    });
+    const [hashCheck, setHashCheck] = useState();
+    const [submission, setSubmission] = useState();
     const [password, setPassword] = useState('');
-    
+    const [loading, setLoading] = useState(false)
+    const fetchHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
     const handleSubmit = e => {
         e.preventDefault();
-        console.log(password)
+        const config = {
+            method: 'PATCH',
+            headers: fetchHeaders,
+            body: JSON.stringify({
+                reset_hash: hash,
+                password: password
+            })
+        }
+        setLoading(true);
+        fetch('/reset_password', config)
+        .then(r => r.json())
+        .then(body => {
+            setLoading(false);
+            setSubmission({
+                message: body.ok ? body.message : body.error,
+                status: body.ok ? 'success' : 'danger'
+            })
+        })
     }
     const handleChange = e => {
-        setPassword(e.target.value)
+        setPassword(e.target.value);
     }
-
-    if (hashCheck.isValid) {
+    useEffect(() => {
+        const config = {
+            method: 'POST',
+            headers: fetchHeaders,
+            body: JSON.stringify({reset_hash: hash})
+        }
+        fetch('/check_reset_hash', config)
+        .then(r => r.json())
+        .then(body => {
+            console.log(body)
+            setHashCheck({
+                message: body.ok ? body.message : body.error,
+                isValid: body.ok
+            })
+        })
+    }, [])
+    
+    if (!hashCheck) {
+        return <Spinner />
+    } else if (hashCheck.isValid) {
         return (
             <>
                 <h2 className='vm-md'>Reset Password</h2>
                 <form onSubmit={handleSubmit}>
-                    <Input
-                        field="password"
-                        message="Enter a new password"
-                        handleChange={handleChange}
-                        formData={password}
-                    />
-                    <button type="submit" className="btn btn-primary">Submit</button>
-                    <p className={`text-${submission.status}`}>{submission.message}</p>
+                    {loading ? <Spinner /> : (!submission ? (
+                        <>
+                            <Input
+                                field="password"
+                                message="Enter a new password"
+                                handleChange={handleChange}
+                                formData={password}
+                            />
+                            <button type="submit" className="btn btn-primary">Submit</button>
+                        </>
+                    ) : (
+                        <div className={`alert alert-${submission.status} mt-5`} role="alert">
+                            {submission.message + ' '}
+                            <Link to='/login' className='alert-link'>Back to login</Link>
+                        </div>
+                    ))}
                 </form>
             </>
         )
     } else {
         return (
-            <div className={`alert alert-${hashCheck.message ? 'warning' : 'light'} mt-5`} role="alert">
-                {hashCheck.message || 'Checking link...'}
+            <div className='alert alert-warning mt-5' role="alert">
+                {hashCheck.message + ' '}
+                <Link to='/login' className='alert-link'>Back to login</Link>
             </div>
         )
     }

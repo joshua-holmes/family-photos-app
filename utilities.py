@@ -29,7 +29,7 @@ def validate_reset_hash(reset_hash):
     expiration_str = select('expiration_time', 'reset_hashes', where=f"hash = '{reset_hash}'", one=True)
     if not (expiration_str and 'expiration_time' in expiration_str):
         return {
-            'response': res('Link not found', 404),
+            'response': res('Reset link not valid!', 404),
             'valid': False,
             'status': 'not found'
         }
