@@ -21,24 +21,24 @@ function MyNavBar({ user, setUser }) {
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">Renner Family Photos</Link>
                 <div>
-                    {
-                        !user ? null : (
-                            <button
-                                onClick={handleAdmin}
-                                className="btn btn-sm btn-secondary hm-sm"
-                                type="button"
-                            >
-                                Admin
-                            </button>
-                        )
-                    }
-                    <button
-                        onClick={handleLogout}
-                        className="btn btn-sm btn-outline-secondary"
-                        type="button"
-                    >
-                        Logout
-                    </button>
+                    {!user?.admin ? null : (
+                        <button
+                            onClick={handleAdmin}
+                            className="btn btn-sm btn-secondary hm-sm"
+                            type="button"
+                        >
+                            Admin
+                        </button>
+                    )}
+                    {!user ? null : (
+                        <button
+                            onClick={handleLogout}
+                            className="btn btn-sm btn-outline-secondary"
+                            type="button"
+                        >
+                            Logout
+                        </button>
+                    )}
                 </div>
             </div>
         </nav>

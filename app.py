@@ -98,8 +98,8 @@ def get_photos_data():
     user = get_user(user_id=session.get('user_id'))
     if user:
         photos = get_photos()
-        dates = process_photo_dates(photos)
-        return res('You are logged in', data={'photos': photos, 'dates': dates})
+        # dates = process_photo_dates(photos)
+        return res('You are logged in', data={'photos': photos})
     return res('You are not authorized', 401)
 
 

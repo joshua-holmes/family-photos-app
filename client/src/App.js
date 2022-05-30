@@ -12,8 +12,7 @@ import MyNavBar from "./components/MyNavBar";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
-    const placeholder = 'loading...'
-    const [user, setUser] = useState(placeholder);
+    const [user, setUser] = useState({placeholder: true});
     useEffect(() => {
         fetch('/me')
         .then(r => r.json())
@@ -23,17 +22,28 @@ function App() {
             } else {
                 setUser();
             }
+        }).catch(e => {
+            console.error("HOUSTON we have a problem... ==>", e)
+            setUser({error: e})
         })
     }, [])
 
-    if (user === placeholder) {
+    if (user?.placeholder) {
         return (
             <div className="spinner-border" role="status">
                 <span className="visually-hidden">Loading...</span>
             </div>
         )
+    } else if (user?.error) {
+        return (
+            <div className="container vm-lg">
+                <div className='alert alert-danger mt-5' role="alert">
+                    Server error! Please contact site administrator.
+                </div>
+            </div>
+        )
     }
-    
+
     return (
         <BrowserRouter>
             <MyNavBar user={user} setUser={setUser} />
