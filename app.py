@@ -1,4 +1,6 @@
-import os, bcrypt, requests, config
+import os, bcrypt, requests, config, sys
+sys.path.append('./database')
+from db import select
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
 from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes, process_photo_dates, res
@@ -96,12 +98,24 @@ def reset_password():
 @app.route('/photos_data')
 def get_photos_data():
     user = get_user(user_id=session.get('user_id'))
-    if user:
-        photos = get_photos()
-        # dates = process_photo_dates(photos)
-        return res('You are logged in', data={'photos': photos})
-    return res('You are not authorized', 401)
+    if not user:
+        return res('You are not authorized', 401)
+    photos = get_photos()
+    return res('You are logged in', data={'photos': photos})
+    
 
+@app.route('/users')
+def get_users():
+    user = get_user(user_id=session.get('user_id'))
+    if not user:
+        return res('You are not authorized', 401)
+    users = select(['admin', 'email'], 'users')
+    if not users:
+        return res('No users found', 404)
+    for u in users:
+        u['admin'] = bool(u['admin'])
+    return res('Users retrieved', data={'users': users})
+    
 
 @app.teardown_appcontext
 def close_connection(exception):

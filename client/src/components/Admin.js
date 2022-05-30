@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "./Input";
 import { TrashFill } from 'react-bootstrap-icons'
 
@@ -62,6 +62,12 @@ function Admin() {
             index: i,
         }
     ))
+
+    useEffect(() => {
+        fetch('/users')
+        .then(r => r.json())
+        .then(console.log)
+    }, [])
 
     return (
         <>
