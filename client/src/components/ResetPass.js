@@ -73,10 +73,10 @@ function ResetPass() {
                             <button type="submit" className="btn btn-primary">Submit</button>
                         </>
                     ) : (
-                        <div className={`alert alert-${submission.status} mt-5`} role="alert">
-                            {submission.message + ' '}
+                        <Alert status={submission?.status}>
+                            {submission?.message}
                             <Link to='/login' className='alert-link'>Back to login</Link>
-                        </div>
+                        </Alert>
                     ))}
                 </form>
             </>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Alert from './Alert';
 import Input from './Input';
 import Spinner from './Spinner';
 
@@ -88,11 +89,14 @@ function Login({ setUser }) {
                     )}
                 </form>
             )}
-            {submission?.message ? (
-                <div className={`alert alert-${submission?.status} mt-5`} role="alert">
-                    {submission?.message}
-                </div>
-            ) : null}
+            <Alert
+                active={submission}
+                status={submission?.status}
+                fixedIfMobile
+                onClick={() => setSubmission()}
+            >
+                {submission?.message}
+            </Alert>
         </>
     )
 }

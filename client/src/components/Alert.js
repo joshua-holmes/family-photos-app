@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
-function Alert({ children, status='info', active=true, fixedWhenMobile, onClick }) {
+function Alert({ children, status='info', active=true, fixedIfMobile, onClick }) {
 
     const [width, setWidth] = useState(window.innerWidth);
     const isMobile = width <= 768;
-    const isFixed = isMobile && fixedWhenMobile;
+    const isFixed = isMobile && fixedIfMobile;
 
 
     const handleWindowSizeChange = () => {

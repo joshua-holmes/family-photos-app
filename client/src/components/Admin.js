@@ -171,7 +171,7 @@ function Admin({ curUser }) {
             <Alert
                 active={!!submission}
                 status={submission?.status}
-                fixedWhenMobile
+                fixedIfMobile
                 onClick={() => setSubmission()}
             >
                 {submission?.message}
