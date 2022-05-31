@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 
 
 
-function Home() {
+function Home({ admin }) {
     const [selectedData, setSelectedData] = useState({})
     const [data, setData] = useState({})
     const stringifyDate = date => {
+        if (typeof date !== 'object') return null
         const y = String(date.getFullYear())
         const m = String(date.getMonth() + 1)
         const d = String(date.getDate())
@@ -70,9 +71,12 @@ function Home() {
                 date={selectedData.date}
                 onChange={handleChange}
             />
+            <hr className='styled vm-lg'/>
             <Detail
                 photos={selectedData.filteredPhotos || []}
                 numPerRow={3}
+                dateAsString={stringifyDate(selectedData.date)}
+                admin={admin}
             />
 
             

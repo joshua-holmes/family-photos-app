@@ -7,6 +7,14 @@ function Input({field, label, error, suppressErrorMessage, message, handleChange
         const emailValid = data[name].search(/\S+@\S+\.\S+/) >= 0 || data[name] === '';
         error = !emailValid && 'sdfs'
     }
+    const props = {
+        value: data[name],
+        onChange: e => handleChange(e, !!error),
+        type: field,
+        name: name,
+        className: `form-control ${error ? 'is-invalid' : ''}`,
+        id: typeof index === 'number' ? index : name
+    }
     return (
         <InputContainer
             name={checkBoxName}
@@ -17,14 +25,16 @@ function Input({field, label, error, suppressErrorMessage, message, handleChange
             index={index}
         >
             {label ? <label htmlFor={field} className="form-label">{label}</label> : null}
-            <input
-                value={data[name]}
-                onChange={e => handleChange(e, !!error)}
-                type={field}
-                name={name}
-                className={`form-control ${error ? 'is-invalid' : ''}`}
-                id={typeof index === 'number' ? index : name}
-            />
+            {field === 'textarea' ? (
+                <textarea
+                    {...props}
+                />
+            ) : (
+                <input
+                    {...props}
+                />
+            )}
+            
             {error && !suppressErrorMessage ? <div className="invalid-feedback">{error}</div> : null}
             {message ? <div className="form-text">{message}</div> : null}
         </InputContainer>

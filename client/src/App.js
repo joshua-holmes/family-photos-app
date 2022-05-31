@@ -49,7 +49,7 @@ function App() {
             <MyNavBar user={user} setUser={setUser} />
             <div className="container vm-lg">
             <Routes>
-                <Route path='/' element={user ? <Home /> : <Navigate to='/login' />} />
+                <Route path='/' element={user ? <Home admin={user.admin} /> : <Navigate to='/login' />} />
                 <Route path='/login' element={!user ? (
                     <Login setUser={setUser} />
                     ) : (

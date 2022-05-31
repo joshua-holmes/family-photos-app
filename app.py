@@ -112,7 +112,7 @@ def get_users():
     boolify_users(users)
     return res('Users retrieved', data={'users': users})
 
-@app.route('/change_users', methods=['POST'])
+@app.route('/change_users', methods=['PATCH'])
 def change_users():
     json_data = request.get_json()
     changed_users = json_data.get('changedUsers', [])
@@ -149,6 +149,49 @@ def change_users():
     if not success:
         return res('Not all of the data was updated correctly in the database', 500, {'users': returned_users})
     return res('Database was succesfully updated!', data={'users': returned_users})
+
+@app.route('/caption/<date>')
+def get_caption(date):
+    user = get_user(user_id=session.get('user_id'))
+    if not user:
+        return res('You are not authorized', 401)
+    data = select(['id', 'text'], 'captions', where=f"date = '{date}'", one=True)
+    print(data)
+    if not (data and 'text' in data):
+        return res('Caption not found', 404)
+    return res('Caption found', 200, data=data)
+    
+@app.route('/caption', methods=['POST'])
+def create_caption():
+    user = get_user(user_id=session.get('user_id'))
+    if not user:
+        return res('You are not authorized', 401)
+    json_data = request.get_json()
+    date = json_data.get('date')
+    text = json_data.get('text', '')
+    if not date:
+        return res('Date parameter must be included!', 422)
+    is_successful = insert('captions', {'date': date, 'text': text})
+    if not is_successful:
+        return res('Something went wrong with the server while creating a new caption. The caption was not saved!', 500)
+    data = select(['id', 'text'], 'captions', where=f"date = '{date}'", one=True)
+    return res('Successfully saved!', 201, data=data)
+
+@app.route('/caption/<caption_id>', methods=['PATCH'])
+def update_caption(caption_id):
+    user = get_user(user_id=session.get('user_id'))
+    if not user:
+        return res('You are not authorized', 401)
+    json_data = request.get_json()
+    text = json_data.get('text')
+    if not text and text != '':
+        return res('Text parameter must be included when updating!')
+    is_successful = update('captions', {'text': text}, where=f'id = {caption_id}')
+    if not is_successful:
+        return res('Something went wrong with the server while updating a caption. The changes were not saved!', 500)
+    data = select(['id', 'text'], 'captions', where=f"id = '{caption_id}'", one=True)
+    return res('Successfully saved!', data=data)
+
 
 
 @app.teardown_appcontext

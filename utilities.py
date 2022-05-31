@@ -92,7 +92,7 @@ def change_password(reset_hash, password):
         'users', data, where=f"id = '{user_id}' AND active = 1")
     if not is_successful:
         return res('An unexpected database error occurred', 500)
-    return res('Password successfully created', 201, {'user_id': user_id})
+    return res('Password successfully created.', 201, {'user_id': user_id})
 
 def send_reset_email(email, reset_hash, mailer):
     title = 'Password Reset - Renner Family Photos'

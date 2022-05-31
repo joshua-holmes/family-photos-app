@@ -107,7 +107,7 @@ function Admin({ curUser }) {
                 return;
             }
             const config = {
-                method: 'POST',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'

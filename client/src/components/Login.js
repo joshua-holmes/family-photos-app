@@ -14,6 +14,9 @@ function Login({ setUser }) {
     const [forgot, setForgot] = useState(false);
     const [loading, setLoading] = useState(false);
     const emailValid = formData.email.search(/\S+@\S+\.\S+/) >= 0 || formData.email === '';
+    const toggleForgot = () => {
+        setForgot(!forgot);
+    }
     const handleChange = e => {
         e.preventDefault();
         const field = e.target.name;
@@ -84,11 +87,9 @@ function Login({ setUser }) {
                         formFields.map(props => <Input key={props.field} {...props} />)
                     )}
                     <button type="submit" className="btn btn-primary">Submit</button>
-                    {forgot ? null : (
-                        <Link to='/login' onClick={() => setForgot(true)} className="hm-sm">
-                            Reset password
-                        </Link>
-                    )}
+                    <Link to='/login' onClick={toggleForgot} className="hm-sm">
+                        {forgot ? 'Back to login' : 'Reset password'}
+                    </Link>
                 </form>
             )}
             <Alert
