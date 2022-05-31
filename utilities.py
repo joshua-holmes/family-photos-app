@@ -9,18 +9,19 @@ def get_user(user_id=None, email=None, password=None):
     user = None
     fields = ['id', 'email', 'admin']
     if user_id:
-        user = select(fields, 'users', where=f'id = {user_id}', one=True)
+        user = select(fields, 'users', where=f'id = {user_id} AND active = 1', one=True)
         if user:
-            # Convert admin field to boolean value
+            boolify_users([user])
             return user
     elif email and password:
         fields.append('password_hash')
-        user = select(fields, 'users', where=f"email = '{email}'", one=True)
+        user = select(fields, 'users', where=f"email = '{email}' AND active = 1", one=True)
         if user and 'password_hash' in user:
             password_hash = user.pop('password_hash')
             try:
                 is_match = bcrypt.checkpw(password.encode(), password_hash.encode())
                 if is_match:
+                    boolify_users([user])
                     return user
             except Exception as e: print("BCRYPT:", e)
     return None
@@ -60,7 +61,7 @@ def post_reset_hash(reset_hash, email):
     now = datetime.now()
     time_limit = timedelta(hours=1)
     expiration_time = str(now + time_limit)
-    q_res = select('id', 'users', where=f"email = '{email}'", one=True)
+    q_res = select('id', 'users', where=f"email = '{email}' AND active = 1", one=True)
     if not (q_res and q_res.get('id')):
         return res('Email does not exist in database. Please contact administrator to be added.', 422)
     user_id = q_res['id']
@@ -83,22 +84,21 @@ def change_password(reset_hash, password):
     data = {
         'password_hash': password_hash
     }
-    user_data = select('user_id', 'reset_hashes', where=f"hash = '{reset_hash}'", one=True)
+    user_data = select('user_id', 'reset_hashes', where=f"hash = '{reset_hash}' AND active = 1", one=True)
     if not (user_data and 'user_id' in user_data):
         return res('Cannot find user', 404)
     user_id = user_data['user_id']
     is_successful = update(
-        'users', data, where=f"id = '{user_id}'")
+        'users', data, where=f"id = '{user_id}' AND active = 1")
     if not is_successful:
         return res('An unexpected database error occurred', 500)
     return res('Password successfully created', 201, {'user_id': user_id})
 
-def send_reset_email(email, reset_hash, mail):
-    message = Message('Password Reset - Renner Family Photos', sender='hello@jpholmes.com', recipients=['themusicmanjph@gmail.com'])
+def send_reset_email(email, reset_hash, mailer):
+    title = 'Password Reset - Renner Family Photos'
     link = f'http://localhost:3000/reset_password/{reset_hash}'
-    message.body = f"Hi! Please follow this link: {link}"
-    mail.send(message)
-    return True
+    body = f"Hi! Please follow this link: {link}"
+    return send_email(email, title, body, mailer)
 
 def expire_hashes(user_id):
     return update('reset_hashes', {'expiration_time': str(datetime.now())}, where=f"user_id = '{user_id}'")
@@ -109,6 +109,16 @@ def process_photo_dates(photos):
         date = parse(photo['creationTime'])
         result.setdefault(date.year, {}).setdefault(date.month, {}).setdefault(date.day, True)
     return result
+
+def boolify_users(users):
+    for u in users:
+        if 'admin' in u:
+            u['admin'] = bool(u['admin'])
+
+def numify_users(users):
+    for u in users:
+        if 'admin' in u:
+            u['admin'] = int(u['admin'])
 
 def res(message, status=200, data=None):
     response = {'status': status}
@@ -121,3 +131,9 @@ def res(message, status=200, data=None):
         response['error'] = message
         response['ok'] = False
     return response, status
+
+def send_email(email, title, body, mailer):
+    message = Message(title, sender='hello@jpholmes.com', recipients=[email])
+    message.body = body
+    mailer.send(message)
+    return True

@@ -46,3 +46,11 @@ img.full-screen {
     background-color: #999;
     z-index: 50;
 }
+
+.alert-fixed {
+    position: fixed !important;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 8px;
+    width: 90%;
+}

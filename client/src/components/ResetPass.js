@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import Alert from './Alert';
 import Input from './Input';
 import Spinner from './Spinner';
 
@@ -82,10 +83,10 @@ function ResetPass() {
         )
     } else {
         return (
-            <div className='alert alert-warning mt-5' role="alert">
+            <Alert status='warning'>
                 {hashCheck.message + ' '}
                 <Link to='/login' className='alert-link'>Back to login</Link>
-            </div>
+            </Alert>
         )
     }
 }

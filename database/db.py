@@ -37,7 +37,7 @@ def select(fields, table, where=None, one=False):
     if type(fields) is str: fields = [fields]
     query = f"SELECT {', '.join(fields)} FROM {table}"
     if where:
-        query += f" WHERE {where}"
+        query += f" WHERE ({where})"
     data = db_exe(query)
     if not data:
         return None
@@ -50,13 +50,11 @@ def insert(table, data):
     is_successful = db_exe(query, mode='w')
     return is_successful
 
-def update(table, data, join_table=None, join_predicate=None, where=None):
+def update(table, data, where=None):
     values = [f"'{v}'" for v in data.values()]
     col_vals = [f"{col} = {val}" for col, val in zip(data, values)]
     query = f"UPDATE {table} SET {', '.join(col_vals)}"
-    # if join_table and join_predicate:
-    #     query += f" FROM {table} LEFT JOIN {join_table} ON {join_predicate}"
     if where:
-        query += f" WHERE {where}"
+        query += f" WHERE ({where})"
     is_successful = db_exe(query, mode='w')
     return is_successful

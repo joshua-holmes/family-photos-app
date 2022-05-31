@@ -14,9 +14,7 @@ function Filter({ minDate, maxDate, disabledDays, date, onChange }) {
                         onChange={onChange}
                     />
                 ) : (
-                    <div className="spinner-border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
+                    <Spinner />
                 )
             }
             

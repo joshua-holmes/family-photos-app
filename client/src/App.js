@@ -10,6 +10,8 @@ import Home from "./components/Home";
 import ResetPass from "./components/ResetPass";
 import MyNavBar from "./components/MyNavBar";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Spinner from "./components/Spinner";
+import Alert from "./components/Alert";
 
 function App() {
     const [user, setUser] = useState({placeholder: true});
@@ -30,16 +32,14 @@ function App() {
 
     if (user?.placeholder) {
         return (
-            <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
-            </div>
+            <Spinner />
         )
     } else if (user?.error) {
         return (
             <div className="container vm-lg">
-                <div className='alert alert-danger mt-5' role="alert">
+                <Alert status='danger'>
                     Server error! Please contact site administrator.
-                </div>
+                </Alert>
             </div>
         )
     }
@@ -56,7 +56,7 @@ function App() {
                     <Navigate to='/' />
                 ) } />
                 <Route path='/admin' element={user?.admin ? (
-                    <Admin />
+                    <Admin curUser={user} />
                     ) : (
                     <Navigate to='/' />
                     )} />
