@@ -37,8 +37,6 @@ function Alert({ children, status='info', active=true, fixedIfMobile, onClick })
     }
 
     
-    console.log(isFixed)
-    
     return (
         <div
             className={`alert alert-${status}${isFixed ? ' alert-dismissible' : ''}${isFixed ? ' alert-fixed' : ''} fade show mt-5`}

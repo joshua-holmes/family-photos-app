@@ -64,7 +64,7 @@ def create_reset_hash():
     response = post_reset_hash(reset_hash, email)
     if 'error' in response[0]:
         return response
-    is_successful = send_reset_email(email, reset_hash, mailer)
+    is_successful = send_reset_email('themusicmanjph@gmail.com', reset_hash, mailer)
     if not is_successful:
         return res('Email failed to send. Please try again.', 500)
     return res('Password reset email sent. Be sure to check your spam. You can close this window now.', 201)
@@ -82,18 +82,15 @@ def reset_password():
     password = json_data.get('password')
     if not password:
         return res('Password field is required', 422)
-    result = validate_reset_hash(reset_hash)
-    if not result['valid']:
-        return result['response']
-    result = change_password(reset_hash, password)
-    if not result[0]['ok']:
-        return result
+    response = change_password(reset_hash, password)
+    if not response[0]['ok']:
+        return response
     # Get user_id from change_password
-    user_id = result[0]['data']['user_id']
+    user_id = response[0]['data']['user_id']
     is_successful = expire_hashes(user_id)
     if not is_successful:
         return res('A database error occurred and an email was not sent', 500)
-    return result
+    return response
 
 @app.route('/photos_data')
 def get_photos_data():
@@ -136,20 +133,16 @@ def change_users():
         else:
             brand_new_users.append(user)
     for user in reinstated_users:
-        print('REINSTATE', user['email'])
         success &= update('users', {'active': 1, 'admin': user['admin']}, where=f"email = '{user['email']}'")
     for user in brand_new_users:
-        print('BRAND NEW', user['email'])
         success &= insert('users', {'email': user['email'], 'admin': user['admin'], 'password_hash': ''})
         title = 'Setup Your Password - Renner Family Photos'
         link = 'http://localhost:3000/login'
         body = f"An account for Renner Family Photos was recently created for you. To setup a password, go to this link and click on 'Reset password' to setup your password: {link}"
         send_email('themusicmanjph@gmail.com', title, body, mailer)
     for user in changed_users:
-        print('CHANGED', user['email'], user['admin'])
         success &= update('users', {'admin': user['admin']}, where=f"email = '{user['email']}'")
     for user in deleted_users:
-        print('DELETED', user['email'])
         success &= update('users', {'active': 0}, where=f"email = '{user['email']}'")
     returned_users = select(['admin', 'email'], 'users', where='active = 1')
     boolify_users(returned_users)

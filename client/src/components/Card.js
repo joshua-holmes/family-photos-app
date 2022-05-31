@@ -1,11 +1,13 @@
 import { useState } from "react";
 
 
-function Card({ url, numPerRow }) {
+function Card({ url, numPerRow, isMobile }) {
     const [selected, setSelected] = useState(false);
     
     const toggleSelect = () => {
-        setSelected(!selected)
+        if (!isMobile) {
+            setSelected(!selected)
+        }
     }
     return (
         <div className={`col-lg-${Math.floor(12 / numPerRow)}`}>

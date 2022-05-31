@@ -10,30 +10,33 @@ function ResetPass() {
     const [submission, setSubmission] = useState();
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false)
+    const passwordValid = password.length >= 8;
     const fetchHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
     const handleSubmit = e => {
         e.preventDefault();
-        const config = {
-            method: 'PATCH',
-            headers: fetchHeaders,
-            body: JSON.stringify({
-                reset_hash: hash,
-                password: password
+        if (passwordValid) {
+            const config = {
+                method: 'PATCH',
+                headers: fetchHeaders,
+                body: JSON.stringify({
+                    reset_hash: hash,
+                    password: password
+                })
+            }
+            setLoading(true);
+            fetch('/reset_password', config)
+            .then(r => r.json())
+            .then(body => {
+                setLoading(false);
+                setSubmission({
+                    message: body.ok ? body.message : body.error,
+                    status: body.ok ? 'success' : 'danger'
+                })
             })
         }
-        setLoading(true);
-        fetch('/reset_password', config)
-        .then(r => r.json())
-        .then(body => {
-            setLoading(false);
-            setSubmission({
-                message: body.ok ? body.message : body.error,
-                status: body.ok ? 'success' : 'danger'
-            })
-        })
     }
     const handleChange = e => {
         setPassword(e.target.value);
@@ -69,12 +72,13 @@ function ResetPass() {
                                 message="Enter a new password"
                                 handleChange={handleChange}
                                 formData={password}
+                                error={!passwordValid && 'Password must be at least 8 characters in length'}
                             />
                             <button type="submit" className="btn btn-primary">Submit</button>
                         </>
                     ) : (
                         <Alert status={submission?.status}>
-                            {submission?.message}
+                            {submission?.message + ' '}
                             <Link to='/login' className='alert-link'>Back to login</Link>
                         </Alert>
                     ))}

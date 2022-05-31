@@ -1,12 +1,25 @@
 import Card from './Card';
+import { useState, useEffect } from 'react';
 
 function Detail({ photos, date, numPerRow }) {
+    const [width, setWidth] = useState(window.innerWidth);
+    const isMobile = width <= 991;
+    const handleWindowSizeChange = () => {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
     const cards = photos.map((photo, i) => (
         <Card
             index={i}
             url={photo.baseUrl}
             key={photo.id}
             numPerRow={numPerRow}
+            isMobile={isMobile}
         />
     ));
     const rows = [];

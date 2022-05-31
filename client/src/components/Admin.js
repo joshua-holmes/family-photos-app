@@ -52,40 +52,7 @@ function Admin({ curUser }) {
         }
         return sortedUsers;
     }
-    const handleSubmit = e => {
-        e.preventDefault();
-        if (formData.map(rec => rec.email).includes(curUser.email)) {
-            setSubmission({
-                status: 'danger',
-                message: 'You cannot modify your own user account'
-            });
-            return;
-        }
-        const config = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                changedUsers: changedUsers,
-                newUsers: newUsers,
-                deletedUsers: deletedUsers
-            })
-        }
-        setLoading(true);
-        fetch('/change_users', config)
-        .then(r => r.json())
-        .then(body => {
-            const processedUsers = filterSortUserData(body.data.users);
-            updateUsersData(processedUsers);
-            setLoading(false);
-            setSubmission({
-                status: body.ok ? 'success' : 'danger',
-                message: body.ok ? body.message : body.error
-            });
-        })
-    }
+
     const handleChange = e => {
         const index = parseInt(e.target.id);
         const name = e.target.name;
@@ -113,8 +80,11 @@ function Admin({ curUser }) {
         const newData = formData.filter((_, i) => i !== parseInt(index) )
         setFormData(newData)
     }
-    const fields = formData.map((_, i) => (
-        {
+    let allValid = true;
+    const fields = formData.map((rec, i) => {
+        const emailValid = rec.email.search(/\S+@\S+\.\S+/) >= 0 || rec.email === '';
+        allValid = allValid && emailValid;
+        return {
             field: 'email',
             handleChange: handleChange,
             formData: formData,
@@ -123,8 +93,46 @@ function Admin({ curUser }) {
             checkBoxName: 'admin',
             isCheckbox: true,
             index: i,
+            error: !emailValid && 'You must enter a valid email address.'
         }
-    ))
+    })
+    const handleSubmit = e => {
+        e.preventDefault();
+        if (allValid) {
+            if (formData.map(rec => rec.email).includes(curUser.email)) {
+                setSubmission({
+                    status: 'danger',
+                    message: 'You cannot modify your own user account'
+                });
+                return;
+            }
+            const config = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    changedUsers: changedUsers,
+                    newUsers: newUsers,
+                    deletedUsers: deletedUsers
+                })
+            }
+            setLoading(true);
+            fetch('/change_users', config)
+            .then(r => r.json())
+            .then(body => {
+                const processedUsers = filterSortUserData(body.data.users);
+                updateUsersData(processedUsers);
+                setLoading(false);
+                setSubmission({
+                    status: body.ok ? 'success' : 'danger',
+                    message: body.ok ? body.message : body.error
+                });
+            })
+        }
+    }
+
     useEffect(() => {
         fetch('/users')
         .then(r => r.json())

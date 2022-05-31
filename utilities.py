@@ -63,7 +63,7 @@ def post_reset_hash(reset_hash, email):
     expiration_time = str(now + time_limit)
     q_res = select('id', 'users', where=f"email = '{email}' AND active = 1", one=True)
     if not (q_res and q_res.get('id')):
-        return res('Email does not exist in database. Please contact administrator to be added.', 422)
+        return res('Email does not belong to an active account. Please contact administrator to be added.', 422)
     user_id = q_res['id']
     data = {
         'hash': reset_hash,
@@ -84,7 +84,7 @@ def change_password(reset_hash, password):
     data = {
         'password_hash': password_hash
     }
-    user_data = select('user_id', 'reset_hashes', where=f"hash = '{reset_hash}' AND active = 1", one=True)
+    user_data = select('user_id', 'reset_hashes', where=f"hash = '{reset_hash}'", one=True)
     if not (user_data and 'user_id' in user_data):
         return res('Cannot find user', 404)
     user_id = user_data['user_id']

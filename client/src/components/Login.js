@@ -13,7 +13,7 @@ function Login({ setUser }) {
     const [submission, setSubmission] = useState();
     const [forgot, setForgot] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    const emailValid = formData.email.search(/\S+@\S+\.\S+/) >= 0 || formData.email === '';
     const handleChange = e => {
         e.preventDefault();
         const field = e.target.name;
@@ -24,42 +24,44 @@ function Login({ setUser }) {
     }
     const handleSubmit = e => {
         e.preventDefault();
-        const config = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        }
-        const path = forgot ? '/create_reset_hash' : '/login'
-        setLoading(true);
-        setSubmission();
-        fetch(path, config)
-        .then(r => r.json())
-        .then(body => {
-            setLoading(false);
-            if (body.ok) {
-                if (forgot) {
-                    setSubmission({
-                        message: body.message,
-                        status: 'success'
-                    })
-                } else {
-                    setUser(body.data.user);
-                }
-                
-            } else {
-                setSubmission({
-                    message: body.error,
-                    status: 'danger'
-                });
+        if (emailValid) {
+            const config = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
             }
-        })
+            const path = forgot ? '/create_reset_hash' : '/login'
+            setLoading(true);
+            setSubmission();
+            fetch(path, config)
+            .then(r => r.json())
+            .then(body => {
+                setLoading(false);
+                if (body.ok) {
+                    if (forgot) {
+                        setSubmission({
+                            message: body.message,
+                            status: 'success'
+                        })
+                    } else {
+                        setUser(body.data.user);
+                    }
+                    
+                } else {
+                    setSubmission({
+                        message: body.error,
+                        status: 'danger'
+                    });
+                }
+            })
+        }
     }
 
     const formFields = [
-        {field: 'email', label: 'Email address'},
+        {field: 'email', label: 'Email address', error: !emailValid && 'You must enter a valid email address.'},
         {field: 'password', label: 'Password', message: 'To sign up, please contact the site administrator.'}
     ]
     formFields.forEach(input => {
@@ -76,7 +78,7 @@ function Login({ setUser }) {
                 <form onSubmit={handleSubmit}>
                     {forgot ? (
                         <Input {...formFields[0]}
-                            message='Please enter email address and reset link will be sent to you'
+                            message='Please enter email address and reset link will be sent to you.'
                         />
                     ) : (
                         formFields.map(props => <Input key={props.field} {...props} />)
@@ -90,7 +92,7 @@ function Login({ setUser }) {
                 </form>
             )}
             <Alert
-                active={submission}
+                active={!!submission}
                 status={submission?.status}
                 fixedIfMobile
                 onClick={() => setSubmission()}
