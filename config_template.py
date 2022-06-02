@@ -1,18 +1,14 @@
-# Can add any combination of characters
-APP_KEY = b'5js?Fsjei$*2@#jf/"'
+import os
+from utilities import create_secret_file
+APP_KEY = os.getenv('FLASK_APP_KEY', '').encode() or b'pickYOURcrazyyyyykey934k1$!@$&!*@$*'
 
-# Change server, port TLS and SSL only if you are not using Gmail
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 465
-MAIL_USE_TLS = False
-MAIL_USE_SSL = True
-# If using Gmail, just enter the email and password for the Google account and email will be setup
-MAIL_USERNAME = 'example@gmail.com'
-MAIL_PASSWORD = 'MyGmailPa$$word'
+MAIL_SERVER = os.getenv('FLASK_MAIL_SERVER') or 'smtp.gmail.com'
+MAIL_PORT = int(os.getenv('FLASK_MAIL_PORT', 0)) or 465
+MAIL_USE_TLS = os.getenv('FLASK_MAIL_USE_TLS') == 'True' or False
+MAIL_USE_SSL = os.getenv('FLASK_MAIL_USE_SSL') == 'True' or True
+MAIL_USERNAME = os.getenv('FLASK_MAIL_USERNAME') or 'example@gmail.com'
+MAIL_PASSWORD = os.getenv('FLASK_MAIL_PASSWORD') or 'gmailpa$$w0rd'
 
-# Create a new secret file in Google Cloud Console.
-# Save it in ./.secrets.
-# Enter the directory of the file here
-CLIENT_SECRET_FILE = "./.secrets/client_secret_700721291989-d3mldjks9s0rcp54h6limclgt3m4r5g5.apps.googleusercontent.com.json"
-
-ALBUM_ID = 'AHNRPkcjzuuMWVo83HE6X5Eq8izQOlslaNVo-s1paRRIdsQxGmteqLpuro421j0yyKzI94LEZ7r8'
+# To use this option as environment variable, save contents of json file to environment variable GOOGLE_CLIENT_SECRET
+CLIENT_SECRET_FILE = create_secret_file(os.getenv('GOOGLE_CLIENT_SECRET')) or "./.secrets/client_secret.json"
+ALBUM_ID = os.getenv('GOOGLE_ALBUM_ID') or 'getYourAlbumIDFromGoogle'

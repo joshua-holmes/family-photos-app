@@ -1,5 +1,6 @@
-import sys, hashlib, random, bcrypt
+import sys, hashlib, random, bcrypt, os
 sys.path.append('./database')
+from random import randint
 from db import select, insert, update
 from datetime import datetime, timedelta
 from dateutil.parser import parse
@@ -137,3 +138,19 @@ def send_email(email, title, body, mailer):
     message.body = body
     mailer.send(message)
     return True
+
+def generate_app_key(length):
+    key = ''
+    for i in range(0, length):
+        key += chr(randint(33, 126))
+    return key
+
+def create_secret_file(secret_as_json):
+    if not secret_as_json:
+        return False
+    directory = './.secrets/'
+    filename = 'client_secret.json'
+    os.makedirs(directory, exist_ok=True)
+    with open(directory + filename, 'w') as f:
+        f.write(secret_as_json)
+    return directory + filename

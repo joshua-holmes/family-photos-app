@@ -156,7 +156,6 @@ def get_caption(date):
     if not user:
         return res('You are not authorized', 401)
     data = select(['id', 'text'], 'captions', where=f"date = '{date}'", one=True)
-    print(data)
     if not (data and 'text' in data):
         return res('Caption not found', 404)
     return res('Caption found', 200, data=data)
@@ -202,4 +201,4 @@ def close_connection(exception):
     
     
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    app.run(debug=False, host='0.0.0.0')

@@ -1,6 +1,5 @@
 **__pycache__/
 .venv/
-.secrets/
 logs/
 config.py
 
@@ -9,8 +8,11 @@ config.py
 **.db
 **.sqbpro
 
-# React app
+# Google secrets
+.secrets/*.json
+.secrets/*.token
 
+# React app
 # dependencies
 **/node_modules
 **/.pnp
@@ -33,3 +35,4 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 gphtospy.log
+variables.env
