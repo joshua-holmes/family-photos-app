@@ -1,6 +1,6 @@
 import os, bcrypt, requests, config, sys
 sys.path.append('./database')
-from db import select, update, insert
+from db import select, update, insert, seed_users_if_empty
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
 from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes, process_photo_dates, res, send_email, boolify_users, numify_users
@@ -18,10 +18,6 @@ app.config['MAIL_USE_SSL'] = config.MAIL_USE_SSL
 
 
 mailer = Mail(app)
-
-
-
-directory = os.getcwd() + f'/client/build'
 
 @app.route('/me')
 def me():
@@ -191,6 +187,15 @@ def update_caption(caption_id):
     data = select(['id', 'text'], 'captions', where=f"id = '{caption_id}'", one=True)
     return res('Successfully saved!', data=data)
 
+@app.route('/seed', methods=['POST'])
+def seed():
+    [is_successful, email] = seed_users_if_empty()
+    if is_successful == None:
+        return res('The users table already had data in it. No data was seeded.', 200)
+    if not is_successful:
+        return res('Something went wrong when seeding the database!', 500)
+    return res(f"Users table was successfully seeded with '{email}'")
+    
 
 
 @app.teardown_appcontext
@@ -198,7 +203,6 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-    
     
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')

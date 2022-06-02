@@ -1,4 +1,6 @@
-import sqlite3
+import sqlite3, sys
+sys.path.append('../')
+import config
 from flask import g
 from datetime import datetime
 
@@ -15,6 +17,7 @@ def db_exe(query, mode='r'):
         db = get_db()
         cur = db.execute(query)
         res = cur.fetchall()
+        
         if mode == 'w': 
             res = True
             db.commit()
@@ -58,3 +61,11 @@ def update(table, data, where=None):
         query += f" WHERE ({where})"
     is_successful = db_exe(query, mode='w')
     return is_successful
+
+def seed_users_if_empty():
+    email = config.INIT_USER_EMAIL
+    users = select('email', 'users')
+    is_successful = None
+    if not users:
+        is_successful = insert('users', {'email': email, 'admin': 1})
+    return [is_successful, email]

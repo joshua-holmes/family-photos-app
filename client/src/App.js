@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js'
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
+import Seed from "./components/Seed";
 import Login from "./components/Login";
 import Admin from "./components/Admin";
 import Home from "./components/Home";
@@ -61,6 +62,7 @@ function App() {
                     <Navigate to='/' />
                     )} />
                 <Route path='/reset_password/:hash' element={<ResetPass />} />
+                <Route path='/seed' element={<Seed user={user} />} />
             </Routes>
             </div>
         </BrowserRouter>
