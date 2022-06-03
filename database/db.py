@@ -1,10 +1,16 @@
 import sqlite3, sys
 sys.path.append('../')
 import config
-from flask import g
+from flask import g, current_app
 from datetime import datetime
 
 DATABASE = './database/db.sqlite'
+SCHEMA = './database/schema.sql'
+
+def init_db():
+    db = get_db()
+    with current_app.open_resource(SCHEMA) as f:
+        db.executescript(f.read().decode('utf8'))
 
 def get_db():
     db = getattr(g, '_database', None)

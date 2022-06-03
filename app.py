@@ -1,9 +1,9 @@
-import os, bcrypt, requests, config, sys
+import os, bcrypt, requests, config, sys, utilities
 sys.path.append('./database')
-from db import select, update, insert, seed_users_if_empty
+from db import select, update, insert, seed_users_if_empty, init_db
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
-from utilities import get_user, validate_reset_hash, post_reset_hash, generate_url_hash, post_reset_hash, send_reset_email, change_password, expire_hashes, process_photo_dates, res, send_email, boolify_users, numify_users
+from utilities import get_user, res, boolify_users, numify_users
 from google_api import get_photos
 
 app = Flask(__name__)
@@ -15,9 +15,8 @@ app.config['MAIL_USERNAME'] = config.MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = config.MAIL_PASSWORD
 app.config['MAIL_USE_TLS'] = config.MAIL_USE_TLS
 app.config['MAIL_USE_SSL'] = config.MAIL_USE_SSL
-
-
 mailer = Mail(app)
+
 
 @app.route('/me')
 def me():
@@ -56,11 +55,11 @@ def create_reset_hash():
     email = request.get_json().get('email')
     if not email:
         return res('You must provide an email address', 422)
-    reset_hash = generate_url_hash(email)
-    response = post_reset_hash(reset_hash, email)
+    reset_hash = utilities.generate_url_hash(email)
+    response = utilities.post_reset_hash(reset_hash, email)
     if 'error' in response[0]:
         return response
-    is_successful = send_reset_email('themusicmanjph@gmail.com', reset_hash, mailer)
+    is_successful = utilities.send_reset_email('themusicmanjph@gmail.com', reset_hash, mailer)
     if not is_successful:
         return res('Email failed to send. Please try again.', 500)
     return res('Password reset email sent. Be sure to check your spam. You can close this window now.', 201)
@@ -69,7 +68,7 @@ def create_reset_hash():
 @app.route('/check_reset_hash', methods=['POST'])
 def check_reset_hash():
     reset_hash = request.get_json().get('reset_hash')
-    return validate_reset_hash(reset_hash)['response']
+    return utilities.validate_reset_hash(reset_hash)['response']
 
 @app.route('/reset_password', methods=['PATCH'])
 def reset_password():
@@ -78,12 +77,12 @@ def reset_password():
     password = json_data.get('password')
     if not password:
         return res('Password field is required', 422)
-    response = change_password(reset_hash, password)
+    response = utilities.change_password(reset_hash, password)
     if not response[0]['ok']:
         return response
     # Get user_id from change_password
     user_id = response[0]['data']['user_id']
-    is_successful = expire_hashes(user_id)
+    is_successful = utilities.expire_hashes(user_id)
     if not is_successful:
         return res('A database error occurred and an email was not sent', 500)
     return response
@@ -131,11 +130,11 @@ def change_users():
     for user in reinstated_users:
         success &= update('users', {'active': 1, 'admin': user['admin']}, where=f"email = '{user['email']}'")
     for user in brand_new_users:
-        success &= insert('users', {'email': user['email'], 'admin': user['admin'], 'password_hash': ''})
+        success &= insert('users', {'email': user['email'], 'admin': user['admin']})
         title = 'Setup Your Password - Renner Family Photos'
         link = 'http://localhost:3000/login'
         body = f"An account for Renner Family Photos was recently created for you. To setup a password, go to this link and click on 'Reset password' to setup your password: {link}"
-        send_email('themusicmanjph@gmail.com', title, body, mailer)
+        utilities.send_email('themusicmanjph@gmail.com', title, body, mailer)
     for user in changed_users:
         success &= update('users', {'admin': user['admin']}, where=f"email = '{user['email']}'")
     for user in deleted_users:
@@ -189,6 +188,7 @@ def update_caption(caption_id):
 
 @app.route('/seed', methods=['POST'])
 def seed():
+    init_db()
     [is_successful, email] = seed_users_if_empty()
     if is_successful == None:
         return res('The users table already had data in it. No data was seeded.', 200)

@@ -1,7 +1,6 @@
 **__pycache__/
 .venv/
 logs/
-config.py
 
 # Database files
 **.sqlite**

@@ -5,6 +5,9 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY ./app.py ./google_api.py ./config.py ./utilities.py ./
+COPY ./database/db.py ./database/schema.sql ./database/
+COPY ./.secrets/photoslibrary_v1.token ./.secrets/
 
-CMD [ "python", "./your-daemon-or-script.py" ]
+CMD ["flask", "run"]
+# CMD [ "gunicorn", "-w 2", "app:app"]
