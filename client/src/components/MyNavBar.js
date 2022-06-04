@@ -4,7 +4,7 @@ function MyNavBar({ user, setUser }) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        fetch('/logout', {method: 'DELETE'})
+        fetch('http://localhost:5000/logout', {method: 'DELETE'})
         .then(r => r.json())
         .then(body => {
             if (body.ok) {
@@ -13,7 +13,7 @@ function MyNavBar({ user, setUser }) {
         })
     }
     const handleAdmin = () => {
-        navigate('/admin')
+        navigate('http://localhost:5000/admin')
     }
 
     return (

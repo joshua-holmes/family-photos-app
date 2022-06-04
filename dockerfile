@@ -9,4 +9,6 @@ COPY ./app.py ./google_api.py ./config.py ./utilities.py ./
 COPY ./database/db.py ./database/schema.sql ./database/
 RUN mkdir ./database/logs
 
+EXPOSE 5000
+
 CMD [ "gunicorn", "-b 0.0.0.0:5000", "-w 2", "app:app"]

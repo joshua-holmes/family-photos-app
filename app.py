@@ -5,8 +5,10 @@ from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
 from utilities import get_user, res, boolify_users, numify_users
 from google_api import get_photos
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 app.secret_key = config.APP_KEY
 app.config['MAIL_SERVER'] = config.MAIL_SERVER

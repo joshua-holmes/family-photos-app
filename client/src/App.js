@@ -9,7 +9,7 @@ import Admin from "./components/Admin";
 import Home from "./components/Home";
 import ResetPass from "./components/ResetPass";
 import MyNavBar from "./components/MyNavBar";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Spinner from "./components/Spinner";
 import Alert from "./components/Alert";
 import Privacy from "./components/Privacy";
@@ -17,7 +17,7 @@ import Privacy from "./components/Privacy";
 function App() {
     const [user, setUser] = useState({placeholder: true});
     useEffect(() => {
-        fetch('/me')
+        fetch('http://localhost:5000/me')
         .then(r => r.json())
         .then(body => {
             if (body.ok) {
@@ -46,7 +46,7 @@ function App() {
     }
 
     return (
-        <BrowserRouter>
+        <HashRouter>
             <MyNavBar user={user} setUser={setUser} />
             <div className="container vm-lg">
                 <Routes>
@@ -65,7 +65,7 @@ function App() {
                     <Route path='/privacy' element={<Privacy />} />
                 </Routes>
             </div>
-        </BrowserRouter>
+        </HashRouter>
     );
 }
 

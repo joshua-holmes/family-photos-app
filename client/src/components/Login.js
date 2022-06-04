@@ -36,7 +36,7 @@ function Login({ setUser }) {
                 },
                 body: JSON.stringify(formData)
             }
-            const path = forgot ? '/create_reset_hash' : '/login'
+            const path = forgot ? 'http://localhost:5000/create_reset_hash' : 'http://localhost:5000/login'
             setLoading(true);
             setSubmission();
             fetch(path, config)
@@ -73,7 +73,7 @@ function Login({ setUser }) {
     })
 
     const handlePrivacyClick = () => {
-        fetch('/privacy')
+        fetch('http://localhost:5000/privacy')
         .then(r => r.json())
         .then(body => {
             if (body.ok) {

@@ -27,7 +27,7 @@ function ResetPass() {
                 })
             }
             setLoading(true);
-            fetch('/reset_password', config)
+            fetch('http://localhost:5000/reset_password', config)
             .then(r => r.json())
             .then(body => {
                 setLoading(false);
@@ -47,7 +47,7 @@ function ResetPass() {
             headers: fetchHeaders,
             body: JSON.stringify({reset_hash: hash})
         }
-        fetch('/check_reset_hash', config)
+        fetch('http://localhost:5000/check_reset_hash', config)
         .then(r => r.json())
         .then(body => {
             console.log(body)
