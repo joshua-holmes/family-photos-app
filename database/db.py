@@ -1,4 +1,4 @@
-import sqlite3, sys
+import sqlite3, sys, os
 sys.path.append('../')
 import config
 from flask import g, current_app
@@ -11,11 +11,15 @@ def init_db():
     db = get_db()
     with current_app.open_resource(SCHEMA) as f:
         db.executescript(f.read().decode('utf8'))
+    seed_users()
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
+        no_db = not os.path.exists(DATABASE)
         db = g._database = sqlite3.connect(DATABASE)
+        if no_db:
+            init_db()
     return db
 
 def db_exe(query, mode='r'):
@@ -68,10 +72,7 @@ def update(table, data, where=None):
     is_successful = db_exe(query, mode='w')
     return is_successful
 
-def seed_users_if_empty():
+def seed_users():
     email = config.INIT_USER_EMAIL
-    users = select('email', 'users')
-    is_successful = None
-    if not users:
-        is_successful = insert('users', {'email': email, 'admin': 1})
-    return [is_successful, email]
+    is_successful = insert('users', {'email': email, 'admin': 1})
+    return is_successful

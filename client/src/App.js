@@ -4,15 +4,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js'
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import Seed from "./components/Seed";
 import Login from "./components/Login";
 import Admin from "./components/Admin";
 import Home from "./components/Home";
 import ResetPass from "./components/ResetPass";
 import MyNavBar from "./components/MyNavBar";
+import Footer from "./components/Footer";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Spinner from "./components/Spinner";
 import Alert from "./components/Alert";
+import Privacy from "./components/Privacy";
 
 function App() {
     const [user, setUser] = useState({placeholder: true});
@@ -49,22 +50,23 @@ function App() {
         <BrowserRouter>
             <MyNavBar user={user} setUser={setUser} />
             <div className="container vm-lg">
-            <Routes>
-                <Route path='/' element={user ? <Home admin={user.admin} /> : <Navigate to='/login' />} />
-                <Route path='/login' element={!user ? (
-                    <Login setUser={setUser} />
-                    ) : (
-                    <Navigate to='/' />
-                ) } />
-                <Route path='/admin' element={user?.admin ? (
-                    <Admin curUser={user} />
-                    ) : (
-                    <Navigate to='/' />
-                    )} />
-                <Route path='/reset_password/:hash' element={<ResetPass />} />
-                <Route path='/seed' element={<Seed user={user} />} />
-            </Routes>
+                <Routes>
+                    <Route path='/' element={user ? <Home admin={user.admin} /> : <Navigate to='/login' />} />
+                    <Route path='/login' element={!user ? (
+                        <Login setUser={setUser} />
+                        ) : (
+                        <Navigate to='/' />
+                    ) } />
+                    <Route path='/admin' element={user?.admin ? (
+                        <Admin curUser={user} />
+                        ) : (
+                        <Navigate to='/' />
+                        )} />
+                    <Route path='/reset_password/:hash' element={<ResetPass />} />
+                    <Route path='/privacy' element={<Privacy />} />
+                </Routes>
             </div>
+            <Footer />
         </BrowserRouter>
     );
 }

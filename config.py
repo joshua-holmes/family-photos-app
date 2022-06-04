@@ -2,7 +2,7 @@ import os, subprocess
 from dotenv import load_dotenv
 from utilities import create_secret_file
 
-if not os.getenv('FLASK_ENV'):
+if not os.getenv('GOOGLE_CLIENT_SECRET'):
     print('Pulling in local environment variables...')
     load_dotenv('./.secrets/variables.env')
 

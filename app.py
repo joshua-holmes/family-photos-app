@@ -1,6 +1,6 @@
 import os, bcrypt, requests, config, sys, utilities
 sys.path.append('./database')
-from db import select, update, insert, seed_users_if_empty, init_db
+from db import select, update, insert, init_db
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
 from utilities import get_user, res, boolify_users, numify_users
@@ -185,18 +185,6 @@ def update_caption(caption_id):
         return res('Something went wrong with the server while updating a caption. The changes were not saved!', 500)
     data = select(['id', 'text'], 'captions', where=f"id = '{caption_id}'", one=True)
     return res('Successfully saved!', data=data)
-
-@app.route('/seed', methods=['POST'])
-def seed():
-    init_db()
-    [is_successful, email] = seed_users_if_empty()
-    if is_successful == None:
-        return res('The users table already had data in it. No data was seeded.', 200)
-    if not is_successful:
-        return res('Something went wrong when seeding the database!', 500)
-    return res(f"Users table was successfully seeded with '{email}'")
-    
-
 
 @app.teardown_appcontext
 def close_connection(exception):
