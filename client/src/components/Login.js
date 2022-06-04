@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Alert from './Alert';
 import Input from './Input';
@@ -72,7 +72,20 @@ function Login({ setUser }) {
         input.formData = formData
     })
 
-    
+    const handlePrivacyClick = () => {
+        fetch('/privacy')
+        .then(r => r.json())
+        .then(body => {
+            if (body.ok) {
+                window.location.replace(body.data.link)
+            } else {
+                setSubmission({
+                    message: body.error,
+                    status: 'danger'
+                })
+            }
+        })
+    }
 
     return (
         <>
@@ -90,6 +103,7 @@ function Login({ setUser }) {
                     <Link to='/login' onClick={toggleForgot} className="hm-sm">
                         {forgot ? 'Back to login' : 'Reset password'}
                     </Link>
+                    <a onClick={handlePrivacyClick} className="hm-sm fake-link">Privacy Policy</a>
                 </form>
             )}
             <Alert

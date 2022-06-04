@@ -9,7 +9,6 @@ import Admin from "./components/Admin";
 import Home from "./components/Home";
 import ResetPass from "./components/ResetPass";
 import MyNavBar from "./components/MyNavBar";
-import Footer from "./components/Footer";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Spinner from "./components/Spinner";
 import Alert from "./components/Alert";
@@ -66,7 +65,6 @@ function App() {
                     <Route path='/privacy' element={<Privacy />} />
                 </Routes>
             </div>
-            <Footer />
         </BrowserRouter>
     );
 }

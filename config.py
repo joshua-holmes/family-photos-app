@@ -18,6 +18,9 @@ MAIL_PASSWORD = os.getenv('FLASK_MAIL_PASSWORD')
 # For seeding the database if users table is empty
 INIT_USER_EMAIL=os.getenv('FLASK_INIT_USER_EMAIL')
 
+# For connecting to the privacy policy page
+PRIVACY_LINK = os.getenv('PRIVACY_LINK')
+
 # To use this option as environment variable, save contents of json file to environment variable GOOGLE_CLIENT_SECRET
 CLIENT_SECRET_FILE = create_secret_file(os.getenv('GOOGLE_CLIENT_SECRET'))
 ALBUM_ID = os.getenv('GOOGLE_ALBUM_ID')

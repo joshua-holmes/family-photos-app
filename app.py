@@ -186,6 +186,13 @@ def update_caption(caption_id):
     data = select(['id', 'text'], 'captions', where=f"id = '{caption_id}'", one=True)
     return res('Successfully saved!', data=data)
 
+@app.route('/privacy')
+def get_privacy_link():
+    link = config.PRIVACY_LINK
+    if not link:
+        return res("Link could not be retrieved! Was not found. Please reach out to the site administrator so this issue can be resolved ASAP. Thank you.", 404)
+    return res("Link successfully retrieved!", data={'link': link})
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
