@@ -119,7 +119,7 @@ function Admin({ curUser }) {
                 })
             }
             setLoading(true);
-            fetch('http://localhost:5000/change_users', config)
+            fetch('http://localhost:5000/update_users', config)
             .then(r => r.json())
             .then(body => {
                 const processedUsers = filterSortUserData(body.data.users);

@@ -22,8 +22,6 @@ logs/
 
 # production
 **/build
-compose.yaml
-compose.yml
 
 # misc
 .DS_Store

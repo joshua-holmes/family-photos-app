@@ -1,0 +1,29 @@
+services:
+  family-photos-fe:
+    build:
+      context: "./client"
+      dockerfile: "./.docker/Dockerfile"
+    ports:
+      - "3000:3000"
+    networks:
+      - front-tier
+      - back-tier
+
+  family-photos-be:
+    build:
+      context: "."
+      dockerfile: "./.docker/Dockerfile"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./.secrets/:/app/.secrets/
+      - ./database/:/app/database/
+    environment:
+      - ./.secrets/variables.env
+    networks:
+      - back-tier
+
+networks:
+  # The presence of these objects is sufficient to define them
+  front-tier: {}
+  back-tier: {}

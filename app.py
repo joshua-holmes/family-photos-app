@@ -109,8 +109,8 @@ def get_users():
     boolify_users(users)
     return res('Users retrieved', data={'users': users})
 
-@app.route('/change_users', methods=['PATCH'])
-def change_users():
+@app.route('/update_users', methods=['PATCH'])
+def update_users():
     json_data = request.get_json()
     changed_users = json_data.get('changedUsers', [])
     new_users = json_data.get('newUsers', [])
@@ -192,7 +192,7 @@ def update_caption(caption_id):
 def get_privacy_link():
     link = config.PRIVACY_LINK
     if not link:
-        return res("Link could not be retrieved! Was not found. Please reach out to the site administrator so this issue can be resolved ASAP. Thank you.", 404)
+        return res("Link could not be retrieved! Was not found. Please reach out to the site administrator so this issue can be resolved. Thank you.", 404)
     return res("Link successfully retrieved!", data={'link': link})
 
 @app.teardown_appcontext

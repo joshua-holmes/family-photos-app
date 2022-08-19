@@ -9,7 +9,7 @@ import Admin from "./components/Admin";
 import Home from "./components/Home";
 import ResetPass from "./components/ResetPass";
 import MyNavBar from "./components/MyNavBar";
-import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Spinner from "./components/Spinner";
 import Alert from "./components/Alert";
 import Privacy from "./components/Privacy";
