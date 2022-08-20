@@ -3,14 +3,16 @@ sys.path.append('./database')
 from db import select, update, insert, init_db
 from flask_mail import Mail, Message
 from flask import Flask, session, request, redirect, url_for, g, render_template, Response, send_from_directory
+from flask_cors import CORS
 from utilities import get_user, res, boolify_users, numify_users
 from google_api import get_photos
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
 
+app.config.from_object(__name__)
 app.secret_key = config.APP_KEY
+CORS(app, supports_credentials=True)
+
 app.config['MAIL_SERVER'] = config.MAIL_SERVER
 app.config['MAIL_PORT'] = config.MAIL_PORT
 app.config['MAIL_USERNAME'] = config.MAIL_USERNAME
@@ -19,9 +21,9 @@ app.config['MAIL_USE_TLS'] = config.MAIL_USE_TLS
 app.config['MAIL_USE_SSL'] = config.MAIL_USE_SSL
 mailer = Mail(app)
 
-
 @app.route('/me')
 def me():
+    session['hi'] = 'bob'
     user = get_user(user_id=session.get('user_id'))
     if user:
         return res('You are logged in', data={'user': {
@@ -52,7 +54,7 @@ def logout():
     session.pop('user_id', None)
     return res('Session destroyed')
 
-@app.route('/create_reset_hash', methods=['POST'])
+@app.route('/reset_hash', methods=['POST'])
 def create_reset_hash():
     email = request.get_json().get('email')
     if not email:
@@ -67,9 +69,8 @@ def create_reset_hash():
     return res('Password reset email sent. Be sure to check your spam. You can close this window now.', 201)
     
 
-@app.route('/check_reset_hash', methods=['POST'])
-def check_reset_hash():
-    reset_hash = request.get_json().get('reset_hash')
+@app.route('/check_reset_hash/<reset_hash>')
+def check_reset_hash(reset_hash):
     return utilities.validate_reset_hash(reset_hash)['response']
 
 @app.route('/reset_password', methods=['PATCH'])
@@ -89,7 +90,7 @@ def reset_password():
         return res('A database error occurred and an email was not sent', 500)
     return response
 
-@app.route('/photos_data')
+@app.route('/photos')
 def get_photos_data():
     user = get_user(user_id=session.get('user_id'))
     if not user:
@@ -109,7 +110,7 @@ def get_users():
     boolify_users(users)
     return res('Users retrieved', data={'users': users})
 
-@app.route('/update_users', methods=['PATCH'])
+@app.route('/users', methods=['PATCH'])
 def update_users():
     json_data = request.get_json()
     changed_users = json_data.get('changedUsers', [])

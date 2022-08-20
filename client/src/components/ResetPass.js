@@ -11,16 +11,16 @@ function ResetPass() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false)
     const passwordValid = password.length >= 8;
-    const fetchHeaders = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
     const handleSubmit = e => {
         e.preventDefault();
         if (passwordValid) {
             const config = {
+                credentials: 'include',
                 method: 'PATCH',
-                headers: fetchHeaders,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify({
                     reset_hash: hash,
                     password: password
@@ -42,21 +42,15 @@ function ResetPass() {
         setPassword(e.target.value);
     }
     useEffect(() => {
-        const config = {
-            method: 'POST',
-            headers: fetchHeaders,
-            body: JSON.stringify({reset_hash: hash})
-        }
-        fetch('http://localhost:5000/check_reset_hash', config)
+        fetch(`http://localhost:5000/check_reset_hash/${hash}`, {credentials: 'include'})
         .then(r => r.json())
         .then(body => {
-            console.log(body)
             setHashCheck({
                 message: body.ok ? body.message : body.error,
                 isValid: body.ok
             })
         })
-    }, [])
+    }, [hash])
     
     if (!hashCheck) {
         return <Spinner />

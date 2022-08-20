@@ -16,6 +16,7 @@ function Card({ url, numPerRow, isMobile }) {
                     src={url}
                     className={`card-img-top`}
                     onClick={toggleSelect}
+                    alt=''
                 />
                 {
                     !selected ? null : (
@@ -28,6 +29,7 @@ function Card({ url, numPerRow, isMobile }) {
                                 data-mdb-animation-start="onLoad"
                                 data-mdb-animation-duration='3s'
                                 onClick={toggleSelect}
+                                alt=''
                             />
                             <div
                                 className='overlay'

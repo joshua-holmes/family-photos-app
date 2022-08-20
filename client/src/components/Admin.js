@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Input from "./Input";
 import Spinner from './Spinner';
 import { TrashFill } from 'react-bootstrap-icons'
@@ -9,7 +9,6 @@ function Admin({ curUser }) {
     const [formData, setFormData] = useState([]);
     const [loading, setLoading] = useState(false)
     const [submission, setSubmission] = useState();
-    const [order, setOrder] = useState([]);
     const data = formData.filter(rec => rec.email !== '');
     const changedUsers = data.filter(rec => {
         const userData = users.find(r => r.email === rec.email);
@@ -23,35 +22,23 @@ function Admin({ curUser }) {
         setUsers(users)
         setFormData([...users, {email: '', admin: false}])
     }
-    const filterSortUserData = users => {
+    const filterSortUserData = useCallback(users => {
         const filteredUsers = users.filter(user => (
             user.email !== curUser.email
         ));
         let sortedUsers = [];
-        if (order.length) {
-            for (let user of users) {
-                if (order.includes(user.email)) {
-                    sortedUsers[order.indexOf(user.email)] = user;
-                } else {
-                    sortedUsers.push(user);
-                }
+        sortedUsers = filteredUsers
+        sortedUsers.sort((a, b) => {
+            if (a.email < b.email) {
+                return -1;
+            } else if (a.email > b.email) {
+                return 1;
+            } else {
+                return 0;
             }
-            // For getting rid of 'empty' items in array
-            sortedUsers = sortedUsers.filter(u => u)
-        } else {
-            sortedUsers = filteredUsers
-            sortedUsers.sort((a, b) => {
-                if (a.email < b.email) {
-                    return -1;
-                } else if (a.email > b.email) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            });
-        }
+        });
         return sortedUsers;
-    }
+    }, [curUser])
 
     const handleChange = e => {
         const index = parseInt(e.target.id);
@@ -70,7 +57,7 @@ function Admin({ curUser }) {
         if (submission?.message) {
             setSubmission();
         }
-        setOrder(newData.map(u => u.email))
+        // setOrder(newData.map(u => u.email))
         setFormData(newData)
     }
     const handleDelete = index => {
@@ -107,6 +94,7 @@ function Admin({ curUser }) {
                 return;
             }
             const config = {
+                credentials: 'include',
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -119,7 +107,7 @@ function Admin({ curUser }) {
                 })
             }
             setLoading(true);
-            fetch('http://localhost:5000/update_users', config)
+            fetch('http://localhost:5000/users', config)
             .then(r => r.json())
             .then(body => {
                 const processedUsers = filterSortUserData(body.data.users);
@@ -134,14 +122,14 @@ function Admin({ curUser }) {
     }
 
     useEffect(() => {
-        fetch('http://localhost:5000/users')
+        fetch('http://localhost:5000/users', {credentials: 'include'})
         .then(r => r.json())
         .then(body => {
             const processedUsers = filterSortUserData(body.data.users);
             updateUsersData(processedUsers)
-            setOrder([...processedUsers.map(u => u.email), ''])
+            // setOrder([...processedUsers.map(u => u.email), ''])
         })
-    }, [])
+    }, [filterSortUserData])
     
     return (
         <>

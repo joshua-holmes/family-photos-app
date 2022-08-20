@@ -1,6 +1,5 @@
 import os, subprocess
 from dotenv import load_dotenv
-from utilities import create_secret_file
 
 if not os.getenv('GOOGLE_CLIENT_SECRET'):
     print('Pulling in local environment variables...')
@@ -22,5 +21,4 @@ INIT_USER_EMAIL=os.getenv('FLASK_INIT_USER_EMAIL')
 PRIVACY_LINK = os.getenv('PRIVACY_LINK')
 
 # To use this option as environment variable, save contents of json file to environment variable GOOGLE_CLIENT_SECRET
-CLIENT_SECRET_FILE = create_secret_file(os.getenv('GOOGLE_CLIENT_SECRET'))
 ALBUM_ID = os.getenv('GOOGLE_ALBUM_ID')

@@ -30,6 +30,7 @@ function Detail({ photos, dateAsString, numPerRow, admin }) {
             path += `/${caption.id}`
         }
         const config = {
+            credentials: 'include',
             method: caption ? 'PATCH' : 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,7 +60,7 @@ function Detail({ photos, dateAsString, numPerRow, admin }) {
             setSubmission();
         }
         if (dateAsString) {
-            fetch(`http://localhost:5000/caption/${dateAsString}`)
+            fetch(`http://localhost:5000/caption/${dateAsString}`, {credentials: 'include'})
             .then(r => r.json())
             .then(body => {
                 setCaption(body.ok ? body.data : null);
@@ -71,7 +72,7 @@ function Detail({ photos, dateAsString, numPerRow, admin }) {
         return () => {
             window.removeEventListener('resize', handleWindowSizeChange);
         }
-    }, [dateAsString]);
+    }, [dateAsString, submission]);
     const cards = photos.map((photo, i) => (
         <Card
             index={i}

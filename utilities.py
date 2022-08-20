@@ -97,7 +97,7 @@ def change_password(reset_hash, password):
 
 def send_reset_email(email, reset_hash, mailer):
     title = 'Password Reset - Renner Family Photos'
-    link = f'http://localhost:3000/reset_password/{reset_hash}'
+    link = f'http://localhost:3000/#/reset_password/{reset_hash}'
     body = f"Hi! Please follow this link: {link}"
     return send_email(email, title, body, mailer)
 
@@ -144,13 +144,3 @@ def generate_app_key(length):
     for i in range(0, length):
         key += chr(randint(33, 126))
     return key
-
-def create_secret_file(secret_as_json):
-    if not secret_as_json:
-        return False
-    directory = './.secrets/'
-    filename = 'client_secret.json'
-    os.makedirs(directory, exist_ok=True)
-    with open(directory + filename, 'w') as f:
-        f.write(secret_as_json)
-    return directory + filename

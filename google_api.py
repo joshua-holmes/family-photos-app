@@ -1,10 +1,16 @@
-import config
+import config, os
 from datetime import datetime
 from gphotospy import authorize
 from gphotospy.album import *
 from gphotospy.media import *
 
-service = authorize.init(config.CLIENT_SECRET_FILE)
+secret_dir = './.secrets/'
+secret_files = os.listdir(secret_dir)
+client_secret = None
+for f in secret_files:
+    if f[:13] == 'client_secret' and f[-5:] == '.json':
+        client_secret = secret_dir + f
+service = authorize.init(client_secret)
 
 def get_photos():
     album_manager = Album(service)

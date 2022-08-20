@@ -29,6 +29,7 @@ function Login({ setUser }) {
         e.preventDefault();
         if (emailValid) {
             const config = {
+                credentials: 'include',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +37,7 @@ function Login({ setUser }) {
                 },
                 body: JSON.stringify(formData)
             }
-            const path = forgot ? 'http://localhost:5000/create_reset_hash' : 'http://localhost:5000/login'
+            const path = forgot ? 'http://localhost:5000/reset_hash' : 'http://localhost:5000/login'
             setLoading(true);
             setSubmission();
             fetch(path, config)
@@ -52,7 +53,6 @@ function Login({ setUser }) {
                     } else {
                         setUser(body.data.user);
                     }
-                    
                 } else {
                     setSubmission({
                         message: body.error,
@@ -72,21 +72,6 @@ function Login({ setUser }) {
         input.formData = formData
     })
 
-    const handlePrivacyClick = () => {
-        fetch('http://localhost:5000/privacy')
-        .then(r => r.json())
-        .then(body => {
-            if (body.ok) {
-                window.location.replace(body.data.link)
-            } else {
-                setSubmission({
-                    message: body.error,
-                    status: 'danger'
-                })
-            }
-        })
-    }
-
     return (
         <>
             <h2 className='vm-md'>{forgot ? 'Reset Password' : 'Login'}</h2>
@@ -103,14 +88,18 @@ function Login({ setUser }) {
                     <Link to='/login' onClick={toggleForgot} className="hm-sm">
                         {forgot ? 'Back to login' : 'Reset password'}
                     </Link>
-                    <a onClick={handlePrivacyClick} className="hm-sm fake-link">Privacy Policy</a>
+                    <Link to='/privacy' className="hm-sm">
+                        Privacy Policy
+                    </Link>
                 </form>
             )}
             <Alert
                 active={!!submission}
                 status={submission?.status}
                 fixedIfMobile
-                onClick={() => setSubmission()}
+                onClick={() => {
+                    if (submission?.status !== 'success') { setSubmission(); }
+                }}
             >
                 {submission?.message}
             </Alert>

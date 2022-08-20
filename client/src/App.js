@@ -9,7 +9,7 @@ import Admin from "./components/Admin";
 import Home from "./components/Home";
 import ResetPass from "./components/ResetPass";
 import MyNavBar from "./components/MyNavBar";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Spinner from "./components/Spinner";
 import Alert from "./components/Alert";
 import Privacy from "./components/Privacy";
@@ -17,7 +17,7 @@ import Privacy from "./components/Privacy";
 function App() {
     const [user, setUser] = useState({placeholder: true});
     useEffect(() => {
-        fetch('http://localhost:5000/me')
+        fetch('http://localhost:5000/me', {credentials: 'include'})
         .then(r => r.json())
         .then(body => {
             if (body.ok) {

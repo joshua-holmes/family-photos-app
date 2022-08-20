@@ -1,10 +1,10 @@
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function MyNavBar({ user, setUser }) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        fetch('http://localhost:5000/logout', {method: 'DELETE'})
+        fetch('http://localhost:5000/logout', {method: 'DELETE', credentials: 'include'})
         .then(r => r.json())
         .then(body => {
             if (body.ok) {
@@ -13,7 +13,7 @@ function MyNavBar({ user, setUser }) {
         })
     }
     const handleAdmin = () => {
-        navigate('http://localhost:5000/admin')
+        navigate('/admin')
     }
 
     return (
