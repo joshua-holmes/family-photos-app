@@ -4,7 +4,7 @@ from utilities import format_domains
 
 if not os.getenv('FLASK_APP_KEY'):
     print('Pulling in local environment variables...')
-    load_dotenv('./.secrets/variables.env')
+    load_dotenv('./.secrets/env')
 
 if os.getenv('FLASK_APP_KEY'):
     print('Environment variables loaded')
