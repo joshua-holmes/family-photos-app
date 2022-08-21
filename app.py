@@ -7,7 +7,7 @@ from flask_cors import CORS
 from utilities import get_user, res, boolify_users, numify_users
 from google_api import get_photos
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='client/build')
 
 app.config.from_object(__name__)
 app.secret_key = config.APP_KEY
@@ -20,6 +20,10 @@ app.config['MAIL_PASSWORD'] = config.MAIL_PASSWORD
 app.config['MAIL_USE_TLS'] = config.MAIL_USE_TLS
 app.config['MAIL_USE_SSL'] = config.MAIL_USE_SSL
 mailer = Mail(app)
+
+@app.route("/", defaults={'path':''})
+def serve(path):
+    return send_from_directory(app.static_folder,'index.html')
 
 @app.route('/me')
 def me():

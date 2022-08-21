@@ -17,7 +17,7 @@ function Home({ admin }) {
 
     useEffect(() => {
         const getData = () => {
-            fetch('http://localhost:5000/photos', {credentials: 'include'})
+            fetch('/photos', {credentials: 'include'})
             .then(r => r.json())
             .then(body => {
                 const photos = body.data.photos;

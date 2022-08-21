@@ -107,7 +107,7 @@ function Admin({ curUser }) {
                 })
             }
             setLoading(true);
-            fetch('http://localhost:5000/users', config)
+            fetch('/users', config)
             .then(r => r.json())
             .then(body => {
                 const processedUsers = filterSortUserData(body.data.users);
@@ -122,7 +122,7 @@ function Admin({ curUser }) {
     }
 
     useEffect(() => {
-        fetch('http://localhost:5000/users', {credentials: 'include'})
+        fetch('/users', {credentials: 'include'})
         .then(r => r.json())
         .then(body => {
             const processedUsers = filterSortUserData(body.data.users);
