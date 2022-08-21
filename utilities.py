@@ -144,3 +144,17 @@ def generate_app_key(length):
     for i in range(0, length):
         key += chr(randint(33, 126))
     return key
+
+def format_domains(domains, protocols=['https', 'http'], paths=['*'], subdomains=['www', '']):
+    variables = [domains, subdomains, protocols, paths]
+    output = []
+    for i, var in enumerate(variables):
+        if type(var) is str:
+            variables[i] = var.split(',')
+    domains, subdomains, protocols, paths = variables
+    for domain in domains:
+        for protocol in protocols:
+            for path in paths:
+                for subdomain in subdomains:
+                    output.append(f'{protocol}://{subdomain}{"." if subdomain else ""}{domain}/{path}')
+    return output

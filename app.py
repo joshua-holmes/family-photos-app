@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 app.config.from_object(__name__)
 app.secret_key = config.APP_KEY
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": config.ORIGINS}})
 
 app.config['MAIL_SERVER'] = config.MAIL_SERVER
 app.config['MAIL_PORT'] = config.MAIL_PORT
@@ -188,13 +188,6 @@ def update_caption(caption_id):
         return res('Something went wrong with the server while updating a caption. The changes were not saved!', 500)
     data = select(['id', 'text'], 'captions', where=f"id = '{caption_id}'", one=True)
     return res('Successfully saved!', data=data)
-
-@app.route('/privacy')
-def get_privacy_link():
-    link = config.PRIVACY_LINK
-    if not link:
-        return res("Link could not be retrieved! Was not found. Please reach out to the site administrator so this issue can be resolved. Thank you.", 404)
-    return res("Link successfully retrieved!", data={'link': link})
 
 @app.teardown_appcontext
 def close_connection(exception):
