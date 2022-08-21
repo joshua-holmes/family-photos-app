@@ -14,7 +14,8 @@ service = authorize.init(client_secret)
 
 def get_photos():
     album_manager = Album(service)
-    album = album_manager.get(config.ALBUM_ID)
+    album_id = config.ALBUM_ID or get_album_id(config.ALBUM_TITLE)
+    album = album_manager.get(album_id)
     media_manager = Media(service)
     album_media_list = list(media_manager.search_album(album['id']))
     photos = []
