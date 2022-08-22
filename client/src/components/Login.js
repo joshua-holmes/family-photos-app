@@ -37,7 +37,7 @@ function Login({ setUser }) {
                 },
                 body: JSON.stringify(formData)
             }
-            const path = forgot ? '/reset_hash' : 'http://localhost:5000/login'
+            const path = forgot ? '/api/reset_hash' : '/api/login'
             setLoading(true);
             setSubmission();
             fetch(path, config)

@@ -27,7 +27,7 @@ function ResetPass() {
                 })
             }
             setLoading(true);
-            fetch('/reset_password', config)
+            fetch('/api/reset_password', config)
             .then(r => r.json())
             .then(body => {
                 setLoading(false);
@@ -42,7 +42,7 @@ function ResetPass() {
         setPassword(e.target.value);
     }
     useEffect(() => {
-        fetch(`/check_reset_hash/${hash}`, {credentials: 'include'})
+        fetch(`/api/check_reset_hash/${hash}`, {credentials: 'include'})
         .then(r => r.json())
         .then(body => {
             setHashCheck({

@@ -25,7 +25,7 @@ mailer = Mail(app)
 def serve(path):
     return send_from_directory(app.static_folder,'index.html')
 
-@app.route('/me')
+@app.route('/api/me')
 def me():
     session['hi'] = 'bob'
     user = get_user(user_id=session.get('user_id'))
@@ -36,7 +36,7 @@ def me():
         }})
     return res('You are not authorized', 401)
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data.get('email')
@@ -53,12 +53,12 @@ def login():
         }})
     
 
-@app.route('/logout', methods=['DELETE'])
+@app.route('/api/logout', methods=['DELETE'])
 def logout():
     session.pop('user_id', None)
     return res('Session destroyed')
 
-@app.route('/reset_hash', methods=['POST'])
+@app.route('/api/reset_hash', methods=['POST'])
 def create_reset_hash():
     email = request.get_json().get('email')
     if not email:
@@ -73,11 +73,11 @@ def create_reset_hash():
     return res('Password reset email sent. Be sure to check your spam. You can close this window now.', 201)
     
 
-@app.route('/check_reset_hash/<reset_hash>')
+@app.route('/api/check_reset_hash/<reset_hash>')
 def check_reset_hash(reset_hash):
     return utilities.validate_reset_hash(reset_hash)['response']
 
-@app.route('/reset_password', methods=['PATCH'])
+@app.route('/api/reset_password', methods=['PATCH'])
 def reset_password():
     json_data = request.get_json()
     reset_hash = json_data.get('reset_hash')
@@ -94,7 +94,7 @@ def reset_password():
         return res('A database error occurred and an email was not sent', 500)
     return response
 
-@app.route('/photos')
+@app.route('/api/photos')
 def get_photos_data():
     user = get_user(user_id=session.get('user_id'))
     if not user:
@@ -103,7 +103,7 @@ def get_photos_data():
     return res('You are logged in', data={'photos': photos})
     
 
-@app.route('/users')
+@app.route('/api/users')
 def get_users():
     user = get_user(user_id=session.get('user_id'))
     if not user:
@@ -114,7 +114,7 @@ def get_users():
     boolify_users(users)
     return res('Users retrieved', data={'users': users})
 
-@app.route('/users', methods=['PATCH'])
+@app.route('/api/users', methods=['PATCH'])
 def update_users():
     json_data = request.get_json()
     changed_users = json_data.get('changedUsers', [])
@@ -152,7 +152,7 @@ def update_users():
         return res('Not all of the data was updated correctly in the database', 500, {'users': returned_users})
     return res('Database was succesfully updated!', data={'users': returned_users})
 
-@app.route('/caption/<date>')
+@app.route('/api/caption/<date>')
 def get_caption(date):
     user = get_user(user_id=session.get('user_id'))
     if not user:
@@ -162,7 +162,7 @@ def get_caption(date):
         return res('Caption not found', 404)
     return res('Caption found', 200, data=data)
     
-@app.route('/caption', methods=['POST'])
+@app.route('/api/caption', methods=['POST'])
 def create_caption():
     user = get_user(user_id=session.get('user_id'))
     if not user:
@@ -178,7 +178,7 @@ def create_caption():
     data = select(['id', 'text'], 'captions', where=f"date = '{date}'", one=True)
     return res('Successfully saved!', 201, data=data)
 
-@app.route('/caption/<caption_id>', methods=['PATCH'])
+@app.route('/api/caption/<caption_id>', methods=['PATCH'])
 def update_caption(caption_id):
     user = get_user(user_id=session.get('user_id'))
     if not user:

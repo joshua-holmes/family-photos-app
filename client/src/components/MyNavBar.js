@@ -4,7 +4,7 @@ function MyNavBar({ user, setUser }) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        fetch('/logout', {method: 'DELETE', credentials: 'include'})
+        fetch('/api/logout', {method: 'DELETE', credentials: 'include'})
         .then(r => r.json())
         .then(body => {
             if (body.ok) {

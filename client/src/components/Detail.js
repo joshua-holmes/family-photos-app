@@ -23,7 +23,7 @@ function Detail({ photos, dateAsString, numPerRow, admin }) {
     const handleSubmit = e => {
         e.preventDefault();
         const body = {text: captionEdit.text}
-        let path = '/caption'
+        let path = '/api/caption'
         if (!caption) {
             body.date = dateAsString;
         } else {
@@ -60,7 +60,7 @@ function Detail({ photos, dateAsString, numPerRow, admin }) {
             setSubmission();
         }
         if (dateAsString) {
-            fetch(`/caption/${dateAsString}`, {credentials: 'include'})
+            fetch(`/api/caption/${dateAsString}`, {credentials: 'include'})
             .then(r => r.json())
             .then(body => {
                 setCaption(body.ok ? body.data : null);

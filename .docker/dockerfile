@@ -1,9 +1,16 @@
-FROM python:3
+FROM alpine:3.14
+
+RUN apk add --no-cache python nodejs npm
 
 WORKDIR /app
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
+
+RUN mkdir client
+COPY ./client/package.json ./client/src/ ./client/public/ ./client/
+RUN cd client && npm i && npm run build && cd ..
+RUN rm -fr ./client/src/ ./client/public/
 
 COPY ./app.py ./google_api.py ./config.py ./utilities.py ./
 COPY ./database/db.py ./database/schema.sql ./database/

@@ -17,7 +17,7 @@ import Privacy from "./components/Privacy";
 function App() {
     const [user, setUser] = useState({placeholder: true});
     useEffect(() => {
-        fetch('/me', {credentials: 'include'})
+        fetch('/api/me', {credentials: 'include'})
         .then(r => r.json())
         .then(body => {
             if (body.ok) {
