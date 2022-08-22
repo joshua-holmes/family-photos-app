@@ -60,14 +60,19 @@ def logout():
 
 @app.route('/api/reset_hash', methods=['POST'])
 def create_reset_hash():
-    email = request.get_json().get('email')
+    req_json = request.get_json()
+    email = req_json.get('email')
     if not email:
         return res('You must provide an email address', 422)
+    root_url = req_json.get('root_url')
+    print('ROOT', root_url)
+    if not root_url:
+        return res('You must provide the root url of the client in the "root_url" parameter', 422)
     reset_hash = utilities.generate_url_hash(email)
     response = utilities.post_reset_hash(reset_hash, email)
     if 'error' in response[0]:
         return response
-    is_successful = utilities.send_reset_email('themusicmanjph@gmail.com', reset_hash, mailer)
+    is_successful = utilities.send_reset_email('themusicmanjph@gmail.com', reset_hash, mailer, root_url)
     if not is_successful:
         return res('Email failed to send. Please try again.', 500)
     return res('Password reset email sent. Be sure to check your spam. You can close this window now.', 201)

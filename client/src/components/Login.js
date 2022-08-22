@@ -35,7 +35,10 @@ function Login({ setUser }) {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    root_url: window.location.origin
+                })
             }
             const path = forgot ? '/api/reset_hash' : '/api/login'
             setLoading(true);

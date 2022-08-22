@@ -95,9 +95,9 @@ def change_password(reset_hash, password):
         return res('An unexpected database error occurred', 500)
     return res('Password successfully created.', 201, {'user_id': user_id})
 
-def send_reset_email(email, reset_hash, mailer):
+def send_reset_email(email, reset_hash, mailer, root_url):
     title = 'Password Reset - Renner Family Photos'
-    link = f'http://localhost:3000/#/reset_password/{reset_hash}'
+    link = f'{root_url}/#/reset_password/{reset_hash}'
     body = f"Hi! Please follow this link: {link}"
     return send_email(email, title, body, mailer)
 

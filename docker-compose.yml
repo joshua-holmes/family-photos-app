@@ -2,7 +2,7 @@ services:
   renner-family-photos:
     build:
       context: "."
-      dockerfile: "./.docker/Dockerfile"
+      dockerfile: "./.docker/dockerfile"
     ports:
       - "5000:5000"
     volumes:
