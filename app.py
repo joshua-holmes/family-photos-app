@@ -143,10 +143,6 @@ def update_users():
         success &= update('users', {'active': 1, 'admin': user['admin']}, where=f"email = '{user['email']}'")
     for user in brand_new_users:
         success &= insert('users', {'email': user['email'], 'admin': user['admin']})
-        title = 'Setup Your Password - Renner Family Photos'
-        link = 'http://localhost:3000/login'
-        body = f"An account for Renner Family Photos was recently created for you. To setup a password, go to this link and click on 'Reset password' to setup your password: {link}"
-        utilities.send_email('themusicmanjph@gmail.com', title, body, mailer)
     for user in changed_users:
         success &= update('users', {'admin': user['admin']}, where=f"email = '{user['email']}'")
     for user in deleted_users:

@@ -134,7 +134,7 @@ def res(message, status=200, data=None):
     return response, status
 
 def send_email(email, title, body, mailer):
-    message = Message(title, sender='hello@jpholmes.com', recipients=[email])
+    message = Message(title, recipients=[email])
     message.body = body
     mailer.send(message)
     return True
