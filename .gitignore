@@ -10,6 +10,8 @@ logs/
 # Google secrets
 .secrets/*.json
 .secrets/*.token
+.secrets/*.zip
+.secrets/get_token/
 
 # React app
 # dependencies

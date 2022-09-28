@@ -2,4 +2,6 @@ Place your token from Google in this folder.
 
 The token comes from running the backend app locally for the first time. It will automatically open a web browser, where you will login with your Google account, then it will generate a token.
 
+You can also run the `get_token.py` script in this folder and it will do the same thing.
+
 Make sure you DO NOT rename the token file. Google may not recognize it if you do that.
