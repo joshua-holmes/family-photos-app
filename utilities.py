@@ -1,4 +1,4 @@
-import sys, hashlib, random, bcrypt, os
+import sys, hashlib, random, bcrypt, os, config
 sys.path.append('./database')
 from random import randint
 from db import select, insert, update
@@ -134,7 +134,7 @@ def res(message, status=200, data=None):
     return response, status
 
 def send_email(email, title, body, mailer):
-    message = Message(title, recipients=[email])
+    message = Message(title, recipients=[email], sender=config.MAIL_USERNAME)
     message.body = body
     mailer.send(message)
     return True
